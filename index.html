@@ -318,17 +318,55 @@ function switchTab(tabId, btn) {
   btn.classList.add('active');
 }
 
-/* === 4. 语音功能 === */
-function speak(text, rate = 0.85) {
+/* ===== 替换为中考听力标准音色 + 慢速优化 ===== */
+let cachedVoice = null;
+
+function getBestVoice() {
+  // 如果已经缓存了音色，直接返回
+  if (cachedVoice) return cachedVoice;
+  
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+
+  // 优先匹配微软的自然音色（中考听力最常用 Aria 和 Guy）
+  cachedVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural') && v.lang.startsWith('en-US')) ||
+                voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural') && v.lang.startsWith('en')) ||
+                voices.find(v => v.name.includes('Microsoft') && v.lang.startsWith('en-US')) ||
+                voices.find(v => v.lang.startsWith('en-US')) ||
+                voices.find(v => v.lang.startsWith('en'));
+  return cachedVoice;
+}
+
+function speak(text, rate = 0.8) {
   if (!window.speechSynthesis) { alert("当前浏览器不支持语音合成"); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "en-US"; u.rate = rate;
+  
+  // 应用筛选出的最佳音色
+  const voice = getBestVoice();
+  if (voice) {
+    u.voice = voice;
+    u.lang = voice.lang;
+  } else {
+    u.lang = "en-US"; // 兜底方案
+  }
+  
+  u.rate = rate; // 正常语速调至 0.8
   speechSynthesis.speak(u);
 }
+
+// 正常速度
 function speakWord() { speak(WORDS[currentIndex].word); }
-function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.55); }
+
+// 🌟 慢速：从原来的 0.55 调到更慢的 0.4，方便孩子跟读
+function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.4); }
+
+// 弹窗单词发音
 function speakPopupWord() { speak($("pop-word").textContent); }
+
+// 句子发音（同样受益于新音色和慢速优化）
+function speakSentence() { speak(currentSentence, 0.8); }
+function slowSpeakSentence() { speak(currentSentence, 0.4); }
 
 /* === 5. 单词打卡模块 === */
 function renderLearn() {
