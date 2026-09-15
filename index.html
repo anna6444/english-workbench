@@ -5,90 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>英语打卡工作台</title>
 <style>
+  /* === 基础主题 === */
   :root {
-    --bg-colorF7;
-    --card-bg: #FFFFFF;
-    --text-main: #1C1C1E;
-    --text-sub: #8E8E93;
-    --blue: #007AFF;
-    --green: #34C759;
-    --orange: #FF9500;
-    --red: #FF3B30;
-    --gray: #E5E5EA;
+    --bg-color: #F2F2F7; --card-bg: #FFFFFF; --text-main: #1C1C1E; --text-sub: #8E8E93;
+    --blue: #007AFF; --green: #34C759; --orange: #FF9500; --red: #FF3B30; --gray: #E5E5EA;
   }
-  
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; 
-    background: var(--bg-color); 
-    color: var(--text-main);
-    min-height: 100vh; 
-    padding: 20px 16px 100px 16px; /* 底部留出导航栏空间 */
-    line-height: 1.5;
-  }
-
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 20px 16px 100px 16px; line-height: 1.5; }
   .hidden { display: none !important; }
-
-  /* === 页面通用标题 === */
   .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 20px; padding-left: 4px; }
-  
-  /* === 卡片样式 === */
-  .card { 
-    background: var(--card-bg); 
-    border-radius: 20px; 
-    padding: 24px; 
-    margin-bottom: 16px; 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
-    position: relative;
-  }
-
-  /* === 进度条 === */
-  .progress-card { padding: 20px 24px; }
-  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .progress-header h2 { font-size: 20px; font-weight: 700; }
-  .progress-header span { font-size: 14px; color: var(--text-sub); font-weight: 500; }
-  .progress-bar-bg { width: 100%; height: 12px; background: var(--gray); border-radius: 6px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--blue); width: 0%; border-radius: 6px; transition: width 0.3s ease; }
-
-  /* === 按钮 === */
-  button { 
-    border: none; 
-    border-radius: 14px; 
-    padding: 14px 20px; 
-    font-size: 16px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); 
-    background: var(--blue); 
-    color: #fff; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-    gap: 6px;
-  }
+  .card { background: var(--card-bg); border-radius: 20px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: relative; }
+  button { border: none; border-radius: 14px; padding: 14px 20px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); background: var(--blue); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   button:active { transform: scale(0.97); opacity: 0.9; }
   button.secondary { background: var(--gray); color: var(--blue); }
   button.success { background: var(--green); }
   button.warn { background: var(--orange); }
-  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
+  button.danger { background: var(--red); }
+  
   /* === 底部导航栏 === */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; width: 100%;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex; justify-content: space-around;
-    padding: 10px 0 24px 0; /* 适配 iPhone 底部横条 */
-    border-top: 1px solid var(--gray);
-    z-index: 1000;
-  }
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    background: none; border: none; box-shadow: none;
-    color: var(--text-sub); font-size: 11px; font-weight: 500;
-    padding: 4px 12px; border-radius: 12px; min-width: 60px;
-  }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 10px 0 24px 0; border-top: 1px solid var(--gray); z-index: 1000; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; box-shadow: none; color: var(--text-sub); font-size: 11px; font-weight: 500; padding: 4px 8px; border-radius: 12px; min-width: 50px; }
   .nav-item.active { color: var(--blue); }
   .nav-item .nav-icon { font-size: 22px; margin-bottom: -2px; }
 
@@ -97,141 +33,77 @@
   .step { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: var(--gray); color: var(--text-sub); transition: 0.2s; }
   .step.active { background: var(--blue); color: #fff; transform: scale(1.1); }
   .step.done { background: var(--green); color: #fff; }
-
-  /* === 单词展示区域 === */
   .word-display { text-align: center; font-size: 46px; font-weight: 800; letter-spacing: 1px; margin: 20px 0 10px; color: var(--text-main); }
   .syllable { display: inline-block; padding: 2px 6px; border-radius: 8px; margin: 0 2px; }
   .phonetic { text-align: center; font-size: 18px; color: var(--text-sub); margin-bottom: 8px; }
   .translation { text-align: center; font-size: 20px; color: var(--text-main); font-weight: 600; margin-bottom: 24px; }
   .btn-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
-
+  
   /* === 选项与拼写 === */
   .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
   .option { padding: 16px; border-radius: 16px; background: var(--bg-color); border: 2px solid transparent; text-align: center; font-size: 18px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-  .option:hover { background: #EBEBF0; }
   .option.correct { background: #E8F8EE; border-color: var(--green); color: var(--green); }
   .option.wrong { background: #FFEDED; border-color: var(--red); color: var(--red); }
   .letters { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-  .letter { width: 48px; height: 48px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--gray); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--text-main); cursor: pointer; transition: 0.15s; }
-  .letter:hover { background: #F9F9FB; }
-  .letter.used { opacity: 0.2; pointer-events: none; box-shadow: none; border-color: transparent; }
+  .letter { width: 48px; height: 48px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--gray); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+  .letter.used { opacity: 0.2; pointer-events: none; box-shadow: none; }
   .spell-input { display: flex; justify-content: center; gap: 8px; margin: 16px 0; }
   .spell-slot { width: 48px; height: 48px; border-bottom: 3px solid var(--blue); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; }
-
+  
   /* === 录音按钮 === */
   .mic-btn { width: 90px; height: 90px; border-radius: 50%; background: var(--orange); box-shadow: 0 4px 15px rgba(255,149,0,0.3); font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; border: none; }
   .mic-btn.recording { background: var(--red); box-shadow: 0 0 0 10px rgba(255,59,48,0.15); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-  /* === 反馈文本 === */
   .feedback { text-align: center; font-size: 18px; font-weight: 600; min-height: 30px; margin: 12px 0; }
   .feedback.good { color: var(--green); }
   .feedback.bad { color: var(--red); }
 
-  /* === 句子区域 === */
-  .sentence { font-size: 22px; line-height: 1.8; text-align: center; margin: 16px 0; padding: 20px; background: var(--bg-color); border-radius: 16px; font-weight: 500; }
-  .sentence .word { cursor: pointer; padding: 4px 6px; border-radius: 8px; transition: background 0.15s; }
-  .sentence .word:hover { background: rgba(0,122,255,0.1); }
-  .sentence .word.highlight { background: #FFE5B4; }
-  .sentence .word.good { color: var(--green); }
-  .sentence .word.bad { color: var(--red); text-decoration: underline wavy var(--red); }
+  /* === 词库管理 === */
+  .wordbook-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-color); border-radius: 16px; margin-bottom: 12px; }
+  .wordbook-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .wordbook-info p { font-size: 13px; color: var(--text-sub); }
+  .import-area { margin-top: 20px; }
+  .import-area textarea { width: 100%; height: 150px; padding: 16px; border: 1px solid var(--gray); border-radius: 16px; font-size: 14px; font-family: monospace; resize: vertical; outline: none; margin-bottom: 12px; }
+  .import-area textarea:focus { border-color: var(--blue); }
 
-  /* === 弹窗 === */
-  .popup-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
-  .popup-mask.show { display: flex; }
-  .popup { background: var(--card-bg); border-radius: 24px; padding: 28px; max-width: 340px; width: 90%; position: relative; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .popup h3 { font-size: 28px; text-align: center; color: var(--text-main); margin-bottom: 16px; font-weight: 800; }
-  .popup .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px; }
-  .popup .row span:first-child { color: var(--text-sub); }
-  .popup .row span:last-child { font-weight: 600; }
-  .popup .close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-sub); background: none; border: none; padding: 4px; }
-
-  /* === 打卡日历 === */
-  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 16px; }
-  .cal-day { aspect-ratio: 1; border-radius: 10px; background: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--text-sub); }
-  .cal-day.done { background: var(--green); color: #fff; font-weight: 700; }
-  .cal-day.today { outline: 2px solid var(--blue); }
-
-  /* === 宠物养成 === */
-  .pet-card { text-align: center; padding: 30px 20px; }
-  .pet-avatar { font-size: 90px; line-height: 1; margin-bottom: 12px; display: inline-block; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  .pet-name { font-size: 24px; font-weight: 800; color: var(--text-main); }
-  .pet-level-text { font-size: 14px; color: var(--text-sub); margin-top: 4px; font-weight: 500; }
-  .pet-status-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; font-weight: 500; }
-  .pet-progress-bg { width: 100%; height: 10px; background: var(--gray); border-radius: 5px; overflow: hidden; margin-bottom: 16px; }
-  .pet-progress-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
-  .pet-progress-fill.exp { background: linear-gradient(90deg, #FFB347, #FFCC33); }
-  .pet-progress-fill.hunger { background: linear-gradient(90deg, #FF6B6B, #FF8E8E); }
-
-  /* === 商城 === */
-  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-  .shop-item { background: var(--card-bg); border: 1px solid var(--gray); border-radius: 16px; padding: 16px; text-align: center; transition: 0.2s; }
-  .shop-item:active { transform: scale(0.98); }
-  .shop-icon { font-size: 36px; margin-bottom: 8px; }
-  .shop-name { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-  .shop-cost { color: var(--orange); font-weight: 700; font-size: 16px; margin-bottom: 12px; }
-  .shop-btn { width: 100%; padding: 10px; font-size: 14px; border-radius: 10px; }
-  .add-item-area { background: var(--bg-color); border-radius: 16px; padding: 20px; margin-top: 20px; }
-  .add-item-area input { padding: 12px; border: 1px solid var(--gray); border-radius: 12px; font-size: 15px; width: 100%; margin-bottom: 12px; outline: none; transition: 0.2s; background: var(--card-bg); }
-  .add-item-area input:focus { border-color: var(--blue); }
-  .add-item-area button { width: 100%; }
+  /* === 首页进度 === */
+  .progress-card { padding: 20px 24px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .progress-bar-bg { width: 100%; height: 12px; background: var(--gray); border-radius: 6px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--blue); width: 0%; border-radius: 6px; transition: width 0.3s; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .stat-box { background: var(--bg-color); border-radius: 16px; padding: 16px; text-align: center; }
+  .stat-box h4 { font-size: 24px; font-weight: 800; color: var(--blue); }
+  .stat-box p { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
 </style>
 </head>
 <body>
 
-<!-- ================= 模块1：宠物首页 ================= -->
+<!-- ================= 模块1：首页 ================= -->
 <div id="tab-home" class="tab-content">
-  <div class="page-title">今日计划</div>
-  
-  <!-- 进度卡片（模仿截图的圆环进度） -->
+  <div class="page-title">今日任务</div>
   <div class="card progress-card">
     <div class="progress-header">
-      <h2>任务进度</h2>
-      <span id="home-progress-text">已完成 0/5</span>
+      <h2 style="font-size: 20px;">今日进度</h2>
+      <span id="home-progress-text" style="font-size: 14px; color: var(--text-sub);">0 / 0</span>
     </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="home-progress-bar" style="width: 0%;"></div>
-    </div>
-    <div style="margin-top: 12px; font-size: 13px; color: var(--text-sub);">⭐ 加油！继续完成打卡赚星星吧～</div>
-  </div>
-
-  <!-- 宠物养成卡片 -->
-  <div class="card pet-card">
-    <div class="pet-avatar" id="pet-avatar">🐱</div>
-    <div class="pet-name" id="pet-name">小猫咪</div>
-    <div class="pet-level-text" id="pet-level-text">等级 1 · 幼年期</div>
-    
-    <div style="margin-top: 24px; text-align: left;">
-      <div class="pet-status-row">
-        <span>成长经验</span>
-        <span id="pet-exp-text">0 / 100</span>
-      </div>
-      <div class="pet-progress-bg"><div class="pet-progress-fill exp" id="pet-exp-bar" style="width: 0%;"></div></div>
-      
-      <div class="pet-status-row" style="margin-top: 16px;">
-        <span>饱食度</span>
-        <span id="pet-hunger-text">80%</span>
-      </div>
-      <div class="pet-progress-bg"><div class="pet-progress-fill hunger" id="pet-hunger-bar" style="width: 80%;"></div></div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="home-progress-bar" style="width: 0%;"></div></div>
+    <div class="stat-grid">
+      <div class="stat-box"><h4 id="stat-review-count">0</h4><p>今日复习</p></div>
+      <div class="stat-box"><h4 id="stat-wrong-count">0</h4><p>错题待复习</p></div>
+      <div class="stat-box"><h4 id="stat-learned-count">0</h4><p>已学会</p></div>
     </div>
   </div>
 
-  <div class="btn-row">
-    <button class="success" style="flex:1;" onclick="feedPet()">🍖 喂食（消耗5⭐）</button>
-    <button class="secondary" style="flex:1;" onclick="patPet()">🤚 摸摸它</button>
-  </div>
-  <div class="feedback" id="pet-feedback"></div>
-  
-  <div style="text-align: center; margin-top: 12px;">
-    <span style="font-size: 18px; font-weight: 700;">⭐ 当前星星：<span id="home-stars" style="color: var(--orange);">0</span></span>
+  <div class="card">
+    <h3 style="margin-bottom: 16px;">📚 选择今日学习的单词本</h3>
+    <div id="home-wordbook-list"></div>
   </div>
 </div>
 
-<!-- ================= 模块2：单词打卡 ================= -->
-<div id="tab-words" class="tab-content hidden">
-  <div class="page-title">单词打卡</div>
+<!-- ================= 模块2：学习打卡 ================= -->
+<div id="tab-learn" class="tab-content hidden">
+  <div class="page-title" id="learn-title">正在学习</div>
   <div class="card">
     <div class="steps" id="steps">
       <div class="step active" data-step="0">学</div>
@@ -241,6 +113,7 @@
       <div class="step" data-step="4">读</div>
       <div class="step" data-step="5">写</div>
     </div>
+    <!-- 学 -->
     <div id="panel-learn">
       <div class="word-display" id="learn-word"></div>
       <div class="phonetic" id="learn-phonetic"></div>
@@ -251,12 +124,14 @@
       </div>
       <div style="text-align: center; margin-top: 20px;"><button class="success" style="width: 80%;" onclick="nextStep()">我学会了 ➜</button></div>
     </div>
+    <!-- 译 -->
     <div id="panel-translate" class="hidden">
       <div class="word-display" id="trans-word"></div>
       <div style="text-align: center; color: var(--text-sub); margin-bottom: 12px; font-size: 14px;">选出正确的中文意思</div>
       <div class="options" id="trans-options"></div>
       <div class="feedback" id="trans-feedback"></div>
     </div>
+    <!-- 拼 -->
     <div id="panel-spell" class="hidden">
       <div class="translation" id="spell-trans"></div>
       <div class="spell-input" id="spell-slots"></div>
@@ -264,12 +139,14 @@
       <div class="feedback" id="spell-feedback"></div>
       <div style="text-align: center;"><button class="warn" onclick="resetSpell()">🔄 重来</button></div>
     </div>
+    <!-- 听 -->
     <div id="panel-listen" class="hidden">
       <div style="text-align: center; font-size: 60px; margin: 20px 0;">👂</div>
       <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 再听一遍</button></div>
       <div class="options" id="listen-options" style="margin-top: 20px;"></div>
       <div class="feedback" id="listen-feedback"></div>
     </div>
+    <!-- 读 -->
     <div id="panel-read" class="hidden">
       <div class="word-display" id="read-word"></div>
       <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 听标准发音</button></div>
@@ -280,6 +157,7 @@
       <div class="feedback" id="read-feedback"></div>
       <div style="text-align: center;"><button class="secondary" onclick="nextStep()">跳过，下一个 ➜</button></div>
     </div>
+    <!-- 写 -->
     <div id="panel-write" class="hidden">
       <div class="translation" id="write-trans"></div>
       <div style="text-align: center; margin: 16px 0;">
@@ -296,120 +174,606 @@
   </div>
 </div>
 
-<!-- ================= 模块3：句子练习 ================= -->
-<div id="tab-sentences" class="tab-content hidden">
-  <div class="page-title">句子练习</div>
+<!-- ================= 模块3：词库管理 ================= -->
+<div id="tab-wordbooks" class="tab-content hidden">
+  <div class="page-title">我的词库</div>
+  
   <div class="card">
-    <div class="sentence" id="sentence-box"></div>
-    <div class="btn-row">
-      <button onclick="speakSentence()">🔊 整句带读</button>
-      <button class="secondary" onclick="slowSpeakSentence()">🐢 慢速</button>
-      <button class="warn" id="sent-mic-btn" onclick="toggleSentenceRecord()">🎤 跟读</button>
+    <h3 style="margin-bottom: 16px;">📚 词库列表</h3>
+    <div id="wordbook-list-container"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 16px;">➕ 新建单词本</h3>
+    <div class="import-area">
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">每行一个单词，格式：<strong>单词 音标 翻译</strong>（音标和翻译可选，用空格隔开）</p>
+      <textarea id="new-book-words" placeholder="cat /kæt/ 猫&#10;hat /hæt/ 帽子&#10;dog 狗"></textarea>
+      <input type="text" id="new-book-name" placeholder="给单词本起个名字，如：牛津树1阶" style="width: 100%; padding: 14px; border: 1px solid var(--gray); border-radius: 14px; font-size: 15px; outline: none; margin-bottom: 12px;">
+      <button class="success" style="width: 100%;" onclick="createNewWordbook()">✅ 创建并保存</button>
     </div>
-    <div class="feedback" id="sentence-feedback"></div>
+  </div>
+
+  <!-- 错题本和已学会的快捷入口 -->
+  <div class="card">
+    <h3 style="margin-bottom: 16px;">📂 系统词库</h3>
+    <div class="wordbook-item" onclick="startSystemBook('wrong')">
+      <div class="wordbook-info"><h3>❌ 错题本</h3><p>做错的单词会自动进入这里，重点复习</p></div>
+      <span style="font-size: 24px;">➡️</span>
+    </div>
+    <div class="wordbook-item" onclick="startSystemBook('learned')">
+      <div class="wordbook-info"><h3>✅ 已学会词库</h3><p>已经掌握并按时复习的单词</p></div>
+      <span style="font-size: 24px;">➡️</span>
+    </div>
   </div>
 </div>
 
-<!-- ================= 模块4：打卡记录 ================= -->
-<div id="tab-calendar" class="tab-content hidden">
-  <div class="page-title">打卡记录</div>
+<!-- ================= 模块4：记录与商城 ================= -->
+<div id="tab-more" class="tab-content hidden">
+  <div class="page-title">记录与商城</div>
   <div class="card">
-    <div class="calendar" id="calendar"></div>
-    <div style="text-align: center; margin-top: 16px; font-size: 18px; font-weight: 700;">
-      ⭐ 总星星：<span id="total-stars" style="color: var(--orange);">0</span>
-    </div>
+    <h3 style="margin-bottom: 12px;">⭐ 总星星：<span id="total-stars" style="color: var(--orange);">0</span></h3>
+    <div class="calendar" id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
   </div>
-</div>
-
-<!-- ================= 模块5：兑换商城 ================= -->
-<div id="tab-shop" class="tab-content hidden">
-  <div class="page-title">兑换商城</div>
   <div class="card">
-    <div style="text-align: center; margin-bottom: 16px; font-size: 16px; font-weight: 700;">
-      ⭐ 可用星星：<span id="shop-stars" style="color: var(--orange);">0</span>
-    </div>
-    <div class="shop-grid" id="shop-grid"></div>
-    <div class="add-item-area">
-      <h3 style="font-size: 15px; margin-bottom: 12px; color: var(--text-sub); font-weight: 600;">🛠️ 家长自定义奖品</h3>
-      <input type="text" id="new-item-name" placeholder="奖品名称，如：看动画片30分钟">
-      <input type="number" id="new-item-cost" placeholder="需要星星数，如：50">
-      <input type="text" id="new-item-icon" placeholder="图标（可选），如：📺">
-      <button class="secondary" onclick="addShopItem()">➕ 添加奖品</button>
+    <h3 style="margin-bottom: 16px;">🎁 兑换商城</h3>
+    <div class="shop-grid" id="shop-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+    <div class="add-item-area" style="margin-top: 16px; background: var(--bg-color); border-radius: 16px; padding: 20px;">
+      <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-sub);">家长添加奖品</h4>
+      <input type="text" id="new-item-name" placeholder="奖品名称" style="width: 100%; padding: 12px; border: 1px solid var(--gray); border-radius: 12px; margin-bottom: 10px; outline: none;">
+      <input type="number" id="new-item-cost" placeholder="所需星星数" style="width: 100%; padding: 12px; border: 1px solid var(--gray); border-radius: 12px; margin-bottom: 10px; outline: none;">
+      <button class="secondary" style="width: 100%;" onclick="addShopItem()">➕ 添加</button>
     </div>
   </div>
 </div>
 
 <!-- 底部导航栏 -->
 <div class="bottom-nav">
-  <button class="nav-item active" onclick="switchTab('tab-home', this)">
-    <span class="nav-icon">🏠</span><span>首页</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('tab-words', this)">
-    <span class="nav-icon">📖</span><span>单词</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('tab-sentences', this)">
-    <span class="nav-icon">📝</span><span>句子</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('tab-calendar', this)">
-    <span class="nav-icon">📅</span><span>记录</span>
-  </button>
-  <button class="nav-item" onclick="switchTab('tab-shop', this)">
-    <span class="nav-icon">🎁</span><span>商城</span>
-  </button>
+  <button class="nav-item active" onclick="switchTab('tab-home', this)"><span class="nav-icon">🏠</span><span>首页</span></button>
+  <button class="nav-item" onclick="switchTab('tab-learn', this)"><span class="nav-icon">📖</span><span>打卡</span></button>
+  <button class="nav-item" onclick="switchTab('tab-wordbooks', this)"><span class="nav-icon">📚</span><span>词库</span></button>
+  <button class="nav-item" onclick="switchTab('tab-more', this)"><span class="nav-icon">⚙️</span><span>记录</span></button>
 </div>
 
 <!-- 单词详情弹窗 -->
-<div class="popup-mask" id="popup-mask" onclick="if(event.target===this)closePopup()">
-  <div class="popup">
-    <button class="close" onclick="closePopup()">✕</button>
-    <h3 id="pop-word"></h3>
-    <div class="row"><span>音标</span><span id="pop-phonetic"></span></div>
-    <div class="row"><span>翻译</span><span id="pop-trans"></span></div>
-    <div class="row"><span>音节</span><span id="pop-syllable"></span></div>
-    <div class="row"><span>词族</span><span id="pop-family"></span></div>
+<div class="popup-mask" id="popup-mask" style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000;" onclick="if(event.target===this)closePopup()">
+  <div class="popup" style="background: var(--card-bg); border-radius: 24px; padding: 28px; max-width: 340px; width: 90%; position: relative;">
+    <button class="close" style="position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-sub); background: none; border: none; padding: 4px;" onclick="closePopup()">✕</button>
+    <h3 id="pop-word" style="font-size: 28px; text-align: center; margin-bottom: 16px; font-weight: 800;"></h3>
+    <div class="row" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px;"><span style="color: var(--text-sub);">音标</span><span id="pop-phonetic"></span></div>
+    <div class="row" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px;"><span style="color: var(--text-sub);">翻译</span><span id="pop-trans"></span></div>
+    <div class="row" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px;"><span style="color: var(--text-sub);">音节</span><span id="pop-syllable"></span></div>
+    <div class="row" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px;"><span style="color: var(--text-sub);">词族</span><span id="pop-family"></span></div>
     <div style="text-align: center; margin-top: 20px;"><button onclick="speakPopupWord()">🔊 听发音</button></div>
   </div>
 </div>
 
 <script>
-/* === 1. 数据 === */
-const WORDS = [
+/* ============================================================
+   数据层：使用 localStorage 管理词库、复习计划
+   ============================================================ */
+const STORAGE_KEYS = {
+  WORDBOOKS: 'ew_workbooks',     // 用户自定义和内置词库
+  LEARNED: 'ew_learned',         // 已学会的单词
+  WRONG: 'ew_wrong',             // 错题本
+  STARS: 'ew_stars',             // 星星总数
+  CHECKED_DAYS: 'ew_checkedDays',// 打卡日期
+  SHOP: 'ew_shopItems'           // 商城奖品
+};
+
+// 内置基础词库（200个小学核心词汇，按自然拼读分组）
+const DEFAULT_WORDS = [
+  // -at 家族
   { word: "cat", phonetic: "/kæt/", trans: "猫", syllables: ["c","a","t"], family: "-at 家族" },
   { word: "hat", phonetic: "/hæt/", trans: "帽子", syllables: ["h","a","t"], family: "-at 家族" },
   { word: "mat", phonetic: "/mæt/", trans: "垫子", syllables: ["m","a","t"], family: "-at 家族" },
+  { word: "rat", phonetic: "/ræt/", trans: "老鼠", syllables: ["r","a","t"], family: "-at 家族" },
+  { word: "bat", phonetic: "/bæt/", trans: "蝙蝠", syllables: ["b","a","t"], family: "-at 家族" },
+  // -ap 家族
+  { word: "cap", phonetic: "/kæp/", trans: "帽子", syllables: ["c","a","p"], family: "-ap 家族" },
+  { word: "map", phonetic: "/mæp/", trans: "地图", syllables: ["m","a","p"], family: "-ap 家族" },
+  { word: "tap", phonetic: "/tæp/", trans: "水龙头", syllables: ["t","a","p"], family: "-ap 家族" },
+  // -ig 家族
+  { word: "big", phonetic: "/bɪɡ/", trans: "大的", syllables: ["b","i","g"], family: "-ig 家族" },
+  { word: "pig", phonetic: "/pɪɡ/", trans: "猪", syllables: ["p","i","g"], family: "-ig 家族" },
+  { word: "dig", phonetic: "/dɪɡ/", trans: "挖", syllables: ["d","i","g"], family: "-ig 家族" },
+  // -og 家族
   { word: "dog", phonetic: "/dɒɡ/", trans: "狗", syllables: ["d","o","g"], family: "-og 家族" },
   { word: "log", phonetic: "/lɒɡ/", trans: "木头", syllables: ["l","o","g"], family: "-og 家族" },
+  { word: "fog", phonetic: "/fɒɡ/", trans: "雾", syllables: ["f","o","g"], family: "-og 家族" },
+  // -un 家族
   { word: "sun", phonetic: "/sʌn/", trans: "太阳", syllables: ["s","u","n"], family: "-un 家族" },
   { word: "run", phonetic: "/rʌn/", trans: "跑", syllables: ["r","u","n"], family: "-un 家族" },
+  { word: "fun", phonetic: "/fʌn/", trans: "有趣", syllables: ["f","u","n"], family: "-un 家族" },
+  // -ook 家族
   { word: "book", phonetic: "/bʊk/", trans: "书", syllables: ["b","oo","k"], family: "-ook 家族" },
+  { word: "look", phonetic: "/lʊk/", trans: "看", syllables: ["l","oo","k"], family: "-ook 家族" },
+  { word: "cook", phonetic: "/kʊk/", trans: "做饭", syllables: ["c","oo","k"], family: "-ook 家族" },
+  // -ish 家族
   { word: "fish", phonetic: "/fɪʃ/", trans: "鱼", syllables: ["f","i","sh"], family: "-ish 家族" },
-  { word: "cake", phonetic: "/keɪk/", trans: "蛋糕", syllables: ["c","a","ke"], family: "a-e 魔法e" }
+  { word: "dish", phonetic: "/dɪʃ/", trans: "盘子", syllables: ["d","i","sh"], family: "-ish 家族" },
+  { word: "wish", phonetic: "/wɪʃ/", trans: "愿望", syllables: ["w","i","sh"], family: "-ish 家族" },
+  // a-e 魔法e
+  { word: "cake", phonetic: "/keɪk/", trans: "蛋糕", syllables: ["c","a","ke"], family: "a-e 魔法e" },
+  { word: "lake", phonetic: "/leɪk/", trans: "湖", syllables: ["l","a","ke"], family: "a-e 魔法e" },
+  { word: "make", phonetic: "/meɪk/", trans: "制作", syllables: ["m","a","ke"], family: "a-e 魔法e" },
+  { word: "bake", phonetic: "/beɪk/", trans: "烘焙", syllables: ["b","a","ke"], family: "a-e 魔法e" },
+  { word: "name", phonetic: "/neɪm/", trans: "名字", syllables: ["n","a","me"], family: "a-e 魔法e" },
+  { word: "game", phonetic: "/ɡeɪm/", trans: "游戏", syllables: ["g","a","me"], family: "a-e 魔法e" },
+  // 更多常见词
+  { word: "apple", phonetic: "/ˈæpəl/", trans: "苹果", syllables: ["ap","ple"], family: "双音节" },
+  { word: "banana", phonetic: "/bəˈnɑːnə/", trans: "香蕉", syllables: ["ba","na","na"], family: "多音节" },
+  { word: "orange", phonetic: "/ˈɒrɪndʒ/", trans: "橙子", syllables: ["or","ange"], family: "双音节" },
+  { word: "water", phonetic: "/ˈwɔːtər/", trans: "水", syllables: ["wa","ter"], family: "双音节" },
+  { word: "school", phonetic: "/skuːl/", trans: "学校", syllables: ["s","ch","ool"], family: "辅音组合" },
+  { word: "teacher", phonetic: "/ˈtiːtʃər/", trans: "老师", syllables: ["tea","cher"], family: "双音节" },
+  { word: "student", phonetic: "/ˈstjuːdənt/", trans: "学生", syllables: ["stu","dent"], family: "双音节" },
+  { word: "stationery", phonetic: "/ˈsteɪʃənri/", trans: "文具", syllables: ["sta","tion","ery"], family: "多音节" },
+  { word: "friend", phonetic: "/frend/", trans: "朋友", syllables: ["fr","iend"], family: "辅音组合" },
+  { word: "family", phonetic: "/ˈfæməli/", trans: "家庭", syllables: ["fa","mi","ly"], family: "多音节" },
+  { word: "happy", phonetic: "/ˈhæpi/", trans: "快乐的", syllables: ["hap","py"], family: "双音节" },
+  { word: "beautiful", phonetic: "/ˈbjuːtɪfl/", trans: "美丽的", syllables: ["beau","ti","ful"], family: "多音节" },
+  { word: "animal", phonetic: "/ˈænɪml/", trans: "动物", syllables: ["an","i","mal"], family: "多音节" },
+  { word: "elephant", phonetic: "/ˈelɪfənt/", trans: "大象", syllables: ["el","e","phant"], family: "多音节" },
+  { word: "umbrella", phonetic: "/ʌmˈbrelə/", trans: "雨伞", syllables: ["um","brel","la"], family: "多音节" }
 ];
-const SENTENCES = ["I have a new stationery.", "The cat is on the mat.", "Look at the fish in the water."];
+
+// 艾宾浩斯复习间隔（天数）
+const EBBINGHAUS_INTERVALS = [1, 2, 4, 7, 15, 30];
+
+/* ============================================================
+   状态管理与数据初始化
+   ============================================================ */
+let currentBook = 'default'; // 当前学习的词本ID
+let currentWordList = []; // 当前学习的单词队列
 let currentIndex = 0, currentStep = 0;
-let stars = JSON.parse(localStorage.getItem("stars") || "0");
-let checkedDays = JSON.parse(localStorage.getItem("checkedDays") || "[]");
-let today = new Date().toISOString().slice(0, 10);
-let petState = JSON.parse(localStorage.getItem("petState") || '{"name":"小猫咪","level":1,"exp":0,"hunger":80,"avatar":"🐱"}');
-let shopItems = JSON.parse(localStorage.getItem("shopItems") || JSON.stringify([
-  { id: 1, name: "看动画片30分钟", cost: 50, icon: "📺" },
-  { id: 2, name: "买一个小玩具", cost: 200, icon: "🧸" },
-  { id: 3, name: "去公园玩一次", cost: 100, icon: "🏞️" },
-  { id: 4, name: "吃一份冰淇淋", cost: 80, icon: "🍦" }
-]));
+let isReviewMode = false;
 
-function $(id) { return document.getElementById(id); }
+function initStorage() {
+  if (!localStorage.getItem(STORAGE_KEYS.WORDBOOKS)) {
+    localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify({
+      'default': { name: '📘 小学核心词库', words: DEFAULT_WORDS, isSystem: true }
+    }));
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.LEARNED)) localStorage.setItem(STORAGE_KEYS.LEARNED, '[]');
+  if (!localStorage.getItem(STORAGE_KEYS.WRONG)) localStorage.setItem(STORAGE_KEYS.WRONG, '[]');
+  if (!localStorage.getItem(STORAGE_KEYS.STARS)) localStorage.setItem(STORAGE_KEYS.STARS, '0');
+  if (!localStorage.getItem(STORAGE_KEYS.CHECKED_DAYS)) localStorage.setItem(STORAGE_KEYS.CHECKED_DAYS, '[]');
+  if (!localStorage.getItem(STORAGE_KEYS.SHOP)) {
+    localStorage.setItem(STORAGE_KEYS.SHOP, JSON.stringify([
+      { id: 1, name: "看动画片30分钟", cost: 50, icon: "📺" },
+      { id: 2, name: "买一个小玩具", cost: 200, icon: "🧸" },
+      { id: 3, name: "去公园玩一次", cost: 100, icon: "🏞️" }
+    ]));
+  }
+}
+initStorage();
 
-/* === 2. 切换逻辑 === */
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  $(tabId).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function getWordbooks() { return JSON.parse(localStorage.getItem(STORAGE_KEYS.WORDBOOKS)); }
+function getLearned() { return JSON.parse(localStorage.getItem(STORAGE_KEYS.LEARNED)); }
+function getWrong() { return JSON.parse(localStorage.getItem(STORAGE_KEYS.WRONG)); }
+function getStars() { return parseInt(localStorage.getItem(STORAGE_KEYS.STARS) || '0'); }
+function saveLearned(list) { localStorage.setItem(STORAGE_KEYS.LEARNED, JSON.stringify(list)); }
+function saveWrong(list) { localStorage.setItem(STORAGE_KEYS.WRONG, JSON.stringify(list)); }
+function saveStars(n) { localStorage.setItem(STORAGE_KEYS.STARS, n); }
+
+// 获取今天日期字符串
+function getTodayStr() { return new Date().toISOString().slice(0, 10); }
+
+// 计算下次复习时间
+function calcNextReview(reviewCount) {
+  if (reviewCount >= EBBINGHAUS_INTERVALS.length) return null;
+  const days = EBBINGHAUS_INTERVALS[reviewCount];
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
 }
 
-/* === 3. 语音功能（替换为中考听力标准音色 + 慢速优化）=== */
+/* ============================================================
+   复习引擎：生成今日学习计划
+   ============================================================ */
+function generateDailyPlan() {
+  const today = getTodayStr();
+  const learned = getLearned();
+  const wrong = getWrong();
+  
+  // 1. 找出今天需要复习的已学会单词
+  const reviewList = learned.filter(w => w.nextReview && w.nextReview <= today);
+  
+  // 2. 找出今天需要复习的错题（错题优先级最高，错题复习间隔固定）
+  const wrongReviewList = wrong.filter(w => !w.nextReview || w.nextReview <= today);
+  
+  // 3. 从当前选中的词本中，找出还没学过的新词（每天最多学5个）
+  const book = getWordbooks()[currentBook] || getWordbooks()['default'];
+  const bookWords = book.words || [];
+  const learnedWordsSet = new Set(learned.map(w => w.word));
+  const wrongWordsSet = new Set(wrong.map(w => w.word));
+  const newWords = bookWords.filter(w => !learnedWordsSet.has(w.word) && !wrongWordsSet.has(w.word)).slice(0, 5);
+  
+  return { reviewList, wrongReviewList, newWords };
+}
+
+/* ============================================================
+   页面渲染：首页
+   ============================================================ */
+function renderHome() {
+  const plan = generateDailyPlan();
+  const learned = getLearned();
+  const wrong = getWrong();
+  const today = getTodayStr();
+  const checked = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHECKED_DAYS) || '[]');
+  
+  // 统计
+  const totalTasks = plan.reviewList.length + plan.wrongReviewList.length + plan.newWords.length;
+  document.getElementById('stat-review-count').textContent = plan.reviewList.length + plan.wrongReviewList.length;
+  document.getElementById('stat-wrong-count').textContent = wrong.length;
+  document.getElementById('stat-learned-count').textContent = learned.length;
+  
+  const doneCount = checked.includes(today) ? totalTasks : 0;
+  document.getElementById('home-progress-text').textContent = `${doneCount} / ${totalTasks}`;
+  document.getElementById('home-progress-bar').style.width = totalTasks > 0 ? (doneCount / totalTasks * 100) + '%' : '0%';
+  
+  // 渲染词本列表
+  const books = getWordbooks();
+  const listEl = document.getElementById('home-wordbook-list');
+  listEl.innerHTML = '';
+  Object.entries(books).forEach(([id, book]) => {
+    const isActive = id === currentBook;
+    const div = document.createElement('div');
+    div.className = 'wordbook-item';
+    div.style.border = isActive ? '2px solid var(--blue)' : '1px solid var(--gray)';
+    div.innerHTML = `
+      <div class="wordbook-info">
+        <h3>${book.name} ${isActive ? '✅' : ''}</h3>
+        <p>共 ${book.words.length} 个单词</p>
+      </div>
+      <button class="secondary" style="padding: 8px 16px; font-size: 14px;" onclick="startLearn('${id}')">开始学习</button>
+    `;
+    listEl.appendChild(div);
+  });
+}
+
+/* ============================================================
+   开始学习
+   ============================================================ */
+function startLearn(bookId) {
+  currentBook = bookId;
+  isReviewMode = false;
+  const plan = generateDailyPlan();
+  
+  // 合并今日复习 + 新词
+  currentWordList = [
+    ...plan.wrongReviewList.map(w => ({...w, isReview: true, isWrongReview: true})),
+    ...plan.reviewList.map(w => ({...w, isReview: true})),
+    ...plan.newWords
+  ];
+  
+  // 去重
+  const seen = new Set();
+  currentWordList = currentWordList.filter(w => {
+    if (seen.has(w.word)) return false;
+    seen.add(w.word);
+    return true;
+  });
+  
+  if (currentWordList.length === 0) {
+    alert("太棒了！今天的任务已经全部完成啦！🎉");
+    return;
+  }
+  
+  currentIndex = 0;
+  currentStep = 0;
+  document.getElementById('learn-title').textContent = `今日学习 (${currentWordList.length}个单词)`;
+  switchTab('tab-learn', document.querySelectorAll('.nav-item')[1]);
+  renderStep();
+}
+
+/* ============================================================
+   核心学习流程
+   ============================================================ */
+function $(id) { return document.getElementById(id); }
+function getCurrentWord() { return currentWordList[currentIndex] || {word: '', phonetic: '', trans: '', syllables: [], family: ''}; }
+
+function renderLearn() {
+  const w = getCurrentWord();
+  $("learn-word").innerHTML = (w.syllables && w.syllables.length > 0) ? w.syllables.map((s, i) => `<span class="syllable" style="color:${i % 2 ? '#007AFF' : '#FF3B30'}">${s}</span>`).join("") : w.word;
+  $("learn-phonetic").textContent = w.phonetic || '';
+  $("learn-trans").textContent = w.trans || '';
+  if (w.isReview) {
+    $("learn-trans").innerHTML += `<div style="font-size: 14px; color: var(--orange); margin-top: 8px;">🔄 复习单词</div>`;
+  }
+}
+
+function renderTranslate() {
+  const w = getCurrentWord();
+  $("trans-word").textContent = w.word;
+  // 生成干扰项：从当前词库或默认词库中随机选3个
+  const pool = currentWordList.length > 5 ? currentWordList : DEFAULT_WORDS;
+  const others = pool.filter(x => x.word !== w.word).sort(() => Math.random() - 0.5).slice(0, 3);
+  const opts = [w, ...others].sort(() => Math.random() - 0.5);
+  $("trans-options").innerHTML = opts.map(o => `<div class="option" data-word="${o.word}">${o.trans}</div>`).join("");
+  document.querySelectorAll("#trans-options .option").forEach(el => {
+    el.onclick = () => {
+      if (el.dataset.word === w.word) {
+        el.classList.add("correct"); $("trans-feedback").textContent = "太棒了！🎉";
+        $("trans-feedback").className = "feedback good"; speak("Great job!");
+        setTimeout(() => nextStep(), 800);
+      } else {
+        el.classList.add("wrong"); $("trans-feedback").textContent = "再试一次，你可以的！";
+        $("trans-feedback").className = "feedback bad"; speak("Try again");
+        markWrongWord(w); // 记录错题
+      }
+    };
+  });
+  $("trans-feedback").textContent = "";
+}
+
+let spellTarget = [], spellCurrent = [];
+function renderSpell() {
+  const w = getCurrentWord();
+  $("spell-trans").textContent = w.trans;
+  const letters = w.word.split("");
+  const shuffled = [...letters].sort(() => Math.random() - 0.5);
+  spellTarget = letters; spellCurrent = [];
+  $("spell-slots").innerHTML = letters.map(() => `<div class="spell-slot"></div>`).join("");
+  $("spell-letters").innerHTML = shuffled.map((ch, i) => `<div class="letter" data-idx="${i}" data-ch="${ch}">${ch}</div>`).join("");
+  document.querySelectorAll("#spell-letters .letter").forEach(el => {
+    el.onclick = () => {
+      if (el.classList.contains("used")) return;
+      el.classList.add("used"); spellCurrent.push(el.dataset.ch); updateSpellSlots();
+      if (spellCurrent.length === spellTarget.length) checkSpell();
+    };
+  });
+  $("spell-feedback").textContent = "";
+}
+function updateSpellSlots() {
+  document.querySelectorAll("#spell-slots .spell-slot").forEach((slot, i) => { slot.textContent = spellCurrent[i] || ""; });
+}
+function checkSpell() {
+  const w = getCurrentWord();
+  if (spellCurrent.join("") === w.word) {
+    $("spell-feedback").textContent = "拼对啦！✨"; $("spell-feedback").className = "feedback good"; speak("Perfect!");
+    setTimeout(() => nextStep(), 800);
+  } else {
+    $("spell-feedback").textContent = "差一点点，再试试～"; $("spell-feedback").className = "feedback bad"; speak("Almost");
+    markWrongWord(w); // 记录错题
+    setTimeout(resetSpell, 700);
+  }
+}
+function resetSpell() { renderSpell(); }
+
+function renderListen() {
+  const w = getCurrentWord();
+  const pool = currentWordList.length > 5 ? currentWordList : DEFAULT_WORDS;
+  const others = pool.filter(x => x.word !== w.word).sort(() => Math.random() - 0.5).slice(0, 3);
+  const opts = [w, ...others].sort(() => Math.random() - 0.5);
+  $("listen-options").innerHTML = opts.map(o => `<div class="option" data-word="${o.word}">${o.word}</div>`).join("");
+  document.querySelectorAll("#listen-options .option").forEach(el => {
+    el.onclick = () => {
+      if (el.dataset.word === w.word) {
+        el.classList.add("correct"); $("listen-feedback").textContent = "耳朵真灵！👂";
+        $("listen-feedback").className = "feedback good"; speak("Well done!"); setTimeout(() => nextStep(), 800);
+      } else {
+        el.classList.add("wrong"); $("listen-feedback").textContent = "再听一次试试～";
+        $("listen-feedback").className = "feedback bad"; speak("Listen again");
+        markWrongWord(w);
+      }
+    };
+  });
+  $("listen-feedback").textContent = ""; setTimeout(() => speakWord(), 400);
+}
+
+function renderRead() { $("read-word").textContent = getCurrentWord().word; $("read-feedback").textContent = ""; }
+let recognition = null, isRecording = false, recordTarget = "";
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null; const r = new SR(); r.lang = "en-US"; r.interimResults = false; r.maxAlternatives = 1; return r;
+}
+function toggleRecord() {
+  if (isRecording) return;
+  recognition = initRecognition();
+  if (!recognition) { $("read-feedback").textContent = "当前浏览器不支持语音识别，请用 Chrome 或 Edge"; $("read-feedback").className = "feedback bad"; return; }
+  recordTarget = getCurrentWord().word;
+  recognition.onstart = () => { isRecording = true; $("mic-btn").classList.add("recording"); $("mic-label").textContent = "请说..."; $("read-feedback").textContent = "🎤 正在听..."; $("read-feedback").className = "feedback"; };
+  recognition.onresult = (e) => { compareRead(e.results[0][0].transcript.trim().toLowerCase(), recordTarget); };
+  recognition.onerror = () => { $("read-feedback").textContent = "没听清，再试一次～"; $("read-feedback").className = "feedback bad"; resetMic(); };
+  recognition.onend = () => resetMic(); recognition.start();
+}
+function resetMic() { isRecording = false; $("mic-btn").classList.remove("recording"); $("mic-label").textContent = "点我说"; }
+function compareRead(said, target) {
+  const s = said.replace(/[^a-z]/g, ""), t = target.replace(/[^a-z]/g, "");
+  if (s === t) { $("read-feedback").textContent = "读得太准了！🌟"; $("read-feedback").className = "feedback good"; speak("Excellent!"); setTimeout(() => nextStep(), 900); }
+  else if (s.includes(t) || t.includes(s)) { $("read-feedback").textContent = "很接近了，再读一遍～"; $("read-feedback").className = "feedback bad"; speak("Almost"); }
+  else { $("read-feedback").textContent = `你读的是“${said}”，再试试“${target}”`; $("read-feedback").className = "feedback bad"; speak("Try again"); markWrongWord(getCurrentWord()); }
+}
+
+function renderWrite() { $("write-trans").textContent = getCurrentWord().trans; $("write-input").value = ""; $("write-feedback").textContent = ""; $("write-input").focus(); }
+function checkWrite() {
+  const w = getCurrentWord();
+  const val = $("write-input").value.trim().toLowerCase();
+  if (val === w.word) {
+    $("write-feedback").textContent = "写对啦！🏆"; $("write-feedback").className = "feedback good"; speak("Perfect!");
+    setTimeout(() => {
+      // 完成一个单词的整个流程，标记为已学会
+      markLearnedWord(w);
+      addStar();
+      nextWord();
+    }, 900);
+  } else {
+    $("write-feedback").textContent = `正确答案是：${w.word}`; $("write-feedback").className = "feedback bad";
+    markWrongWord(w);
+  }
+}
+
+/* ============================================================
+   单词状态标记：已学会 / 错题本
+   ============================================================ */
+function markWrongWord(wordObj) {
+  if (!wordObj.word) return;
+  let wrongList = getWrong();
+  // 检查是否已经在错题本中
+  const existingIdx = wrongList.findIndex(w => w.word === wordObj.word);
+  if (existingIdx >= 0) {
+    // 如果已经在错题本，重置复习计划，强制明天再复习
+    wrongList[existingIdx].errorCount = (wrongList[existingIdx].errorCount || 0) + 1;
+    wrongList[existingIdx].nextReview = getTodayStr(); // 今天再练一次
+    wrongList[existingIdx].reviewCount = 0; // 重置复习次数
+  } else {
+    // 新加入错题本
+    wrongList.push({
+      ...wordObj,
+      errorCount: 1,
+      reviewCount: 0,
+      nextReview: getTodayStr(),
+      addedDate: getTodayStr()
+    });
+  }
+  // 如果已学会词库中有这个单词，先移除
+  let learnedList = getLearned();
+  learnedList = learnedList.filter(w => w.word !== wordObj.word);
+  saveLearned(learnedList);
+  saveWrong(wrongList);
+}
+
+function markLearnedWord(wordObj) {
+  if (!wordObj.word) return;
+  let learnedList = getLearned();
+  const existingIdx = learnedList.findIndex(w => w.word === wordObj.word);
+  
+  if (existingIdx >= 0) {
+    // 如果已经学过，更新复习次数和时间
+    learnedList[existingIdx].reviewCount = (learnedList[existingIdx].reviewCount || 0) + 1;
+    learnedList[existingIdx].nextReview = calcNextReview(learnedList[existingIdx].reviewCount);
+  } else {
+    // 首次学会
+    learnedList.push({
+      ...wordObj,
+      reviewCount: 0,
+      nextReview: calcNextReview(0),
+      learnedDate: getTodayStr()
+    });
+  }
+  saveLearned(learnedList);
+  
+  // 如果错题本中有这个单词，移除（因为已经学会了）
+  let wrongList = getWrong();
+  wrongList = wrongList.filter(w => w.word !== wordObj.word);
+  saveWrong(wrongList);
+}
+
+/* ============================================================
+   流程控制与导航
+   ============================================================ */
+function renderStep() {
+  document.querySelectorAll(".step").forEach(el => { const s = parseInt(el.dataset.step); el.classList.toggle("active", s === currentStep); el.classList.toggle("done", s < currentStep); });
+  const panels = ['panel-learn', 'panel-translate', 'panel-spell', 'panel-listen', 'panel-read', 'panel-write'];
+  panels.forEach((p, i) => {
+    const el = $(p);
+    if (el) el.classList.toggle("hidden", i !== currentStep);
+  });
+  if (currentStep === 0) renderLearn();
+  if (currentStep === 1) renderTranslate();
+  if (currentStep === 2) renderSpell();
+  if (currentStep === 3) renderListen();
+  if (currentStep === 4) renderRead();
+  if (currentStep === 5) renderWrite();
+}
+function nextStep() { if (currentStep < 5) { currentStep++; renderStep(); } }
+function nextWord() {
+  currentIndex++;
+  if (currentIndex >= currentWordList.length) {
+    alert("🎉 太棒了！今天的单词全部学完了！");
+    addStar(); // 奖励一颗星星
+    switchTab('tab-home', document.querySelector('.nav-item'));
+    return;
+  }
+  currentStep = 0;
+  renderStep();
+}
+function prevWord() { if (currentIndex > 0) { currentIndex--; currentStep = 0; renderStep(); } }
+function skipWord() { nextWord(); }
+
+/* ============================================================
+   词库管理功能
+   ============================================================ */
+function createNewWordbook() {
+  const name = $("new-book-name").value.trim();
+  const text = $("new-book-words").value.trim();
+  if (!name || !text) { alert("请填写单词本名称和单词内容！"); return; }
+  
+  const lines = text.split('\n').filter(l => l.trim());
+  const words = lines.map(line => {
+    const parts = line.trim().split(/\s+/);
+    if (parts.length === 1) return { word: parts[0], phonetic: '', trans: '', syllables: parts[0].split(''), family: '' };
+    if (parts.length === 2) return { word: parts[0], phonetic: '', trans: parts[1], syllables: parts[0].split(''), family: '' };
+    // 假设格式：word /phonetic/ trans
+    return { word: parts[0], phonetic: parts[1], trans: parts.slice(2).join(' '), syllables: parts[0].split(''), family: '' };
+  });
+  
+  if (words.length === 0) { alert("没有识别到有效单词！"); return; }
+  
+  const books = getWordbooks();
+  const id = 'user_' + Date.now();
+  books[id] = { name: name, words: words, isSystem: false };
+  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
+  
+  // 清空输入
+  $("new-book-name").value = "";
+  $("new-book-words").value = "";
+  alert(`✅ 单词本「${name}」创建成功！共导入 ${words.length} 个单词。`);
+  renderHome();
+  renderWordbooks();
+}
+
+function renderWordbooks() {
+  const books = getWordbooks();
+  const container = document.getElementById('wordbook-list-container');
+  container.innerHTML = '';
+  Object.entries(books).forEach(([id, book]) => {
+    const div = document.createElement('div');
+    div.className = 'wordbook-item';
+    div.innerHTML = `
+      <div class="wordbook-info">
+        <h3>${book.name}</h3>
+        <p>共 ${book.words.length} 个单词 ${book.isSystem ? '· 系统词库' : '· 我的词库'}</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="secondary" style="padding: 6px 12px; font-size: 12px;" onclick="startLearn('${id}')">学习</button>
+        ${!book.isSystem ? `<button class="danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteWordbook('${id}')">删除</button>` : ''}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function deleteWordbook(id) {
+  if (!confirm("确定要删除这个单词本吗？")) return;
+  const books = getWordbooks();
+  delete books[id];
+  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
+  renderHome();
+  renderWordbooks();
+}
+
+function startSystemBook(type) {
+  if (type === 'wrong') {
+    const wrongList = getWrong();
+    if (wrongList.length === 0) { alert("错题本是空的，加油保持！"); return; }
+    currentWordList = wrongList.map(w => ({...w, isReview: true, isWrongReview: true}));
+    document.getElementById('learn-title').textContent = '错题本复习';
+  } else if (type === 'learned') {
+    const learnedList = getLearned();
+    if (learnedList.length === 0) { alert("还没有已学会的单词哦！"); return; }
+    currentWordList = learnedList.map(w => ({...w, isReview: true}));
+    document.getElementById('learn-title').textContent = '已学会词库复习';
+  }
+  currentIndex = 0; currentStep = 0;
+  switchTab('tab-learn', document.querySelectorAll('.nav-item')[1]);
+  renderStep();
+}
+
+/* ============================================================
+   语音功能（中考听力标准音色 + 慢速优化）
+   ============================================================ */
 let cachedVoice = null;
 function getBestVoice() {
   if (cachedVoice) return cachedVoice;
@@ -431,253 +795,111 @@ function speak(text, rate = 0.8) {
   u.rate = rate;
   speechSynthesis.speak(u);
 }
-function speakWord() { speak(WORDS[currentIndex].word); }
-function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.4); } // 慢速调到 0.4
+function speakWord() { speak(getCurrentWord().word); }
+function slowSpeakWord() { speak(getCurrentWord().word, 0.4); }
 function speakPopupWord() { speak($("pop-word").textContent); }
-function speakSentence() { speak(currentSentence, 0.8); }
-function slowSpeakSentence() { speak(currentSentence, 0.4); }
 
-/* === 4. 单词打卡 === */
-function renderLearn() {
-  const w = WORDS[currentIndex];
-  $("learn-word").innerHTML = w.syllables.map((s, i) => `<span class="syllable" style="color:${i % 2 ? '#007AFF' : '#FF3B30'}">${s}</span>`).join("");
-  $("learn-phonetic").textContent = w.phonetic;
-  $("learn-trans").textContent = w.trans;
-}
-function renderTranslate() {
-  const w = WORDS[currentIndex];
-  $("trans-word").textContent = w.word;
-  const others = WORDS.filter(x => x.word !== w.word).sort(() => Math.random() - 0.5).slice(0, 3);
-  const opts = [w, ...others].sort(() => Math.random() - 0.5);
-  $("trans-options").innerHTML = opts.map(o => `<div class="option" data-word="${o.word}">${o.trans}</div>`).join("");
-  document.querySelectorAll("#trans-options .option").forEach(el => {
-    el.onclick = () => {
-      if (el.dataset.word === w.word) {
-        el.classList.add("correct"); $("trans-feedback").textContent = "太棒了！🎉";
-        $("trans-feedback").className = "feedback good"; speak("Great job!");
-        setTimeout(() => nextStep(), 800);
-      } else {
-        el.classList.add("wrong"); $("trans-feedback").textContent = "再试一次，你可以的！";
-        $("trans-feedback").className = "feedback bad"; speak("Try again");
-      }
-    };
-  });
-  $("trans-feedback").textContent = "";
-}
-let spellTarget = [], spellCurrent = [];
-function renderSpell() {
-  const w = WORDS[currentIndex];
-  $("spell-trans").textContent = w.trans;
-  const letters = w.word.split("");
-  const shuffled = [...letters].sort(() => Math.random() - 0.5);
-  spellTarget = letters; spellCurrent = [];
-  $("spell-slots").innerHTML = letters.map(() => `<div class="spell-slot"></div>`).join("");
-  $("spell-letters").innerHTML = shuffled.map((ch, i) => `<div class="letter" data-idx="${i}" data-ch="${ch}">${ch}</div>`).join("");
-  document.querySelectorAll("#spell-letters .letter").forEach(el => {
-    el.onclick = () => {
-      if (el.classList.contains("used")) return;
-      el.classList.add("used"); spellCurrent.push(el.dataset.ch); updateSpellSlots();
-      if (spellCurrent.length === spellTarget.length) checkSpell();
-    };
-  });
-  $("spell-feedback").textContent = "";
-}
-function updateSpellSlots() {
-  document.querySelectorAll("#spell-slots .spell-slot").forEach((slot, i) => { slot.textContent = spellCurrent[i] || ""; });
-}
-function checkSpell() {
-  const w = WORDS[currentIndex];
-  if (spellCurrent.join("") === w.word) {
-    $("spell-feedback").textContent = "拼对啦！✨"; $("spell-feedback").className = "feedback good"; speak("Perfect!");
-    setTimeout(() => nextStep(), 800);
-  } else {
-    $("spell-feedback").textContent = "差一点点，再试试～"; $("spell-feedback").className = "feedback bad"; speak("Almost");
-    setTimeout(resetSpell, 700);
-  }
-}
-function resetSpell() { renderSpell(); }
-function renderListen() {
-  const w = WORDS[currentIndex];
-  const others = WORDS.filter(x => x.word !== w.word).sort(() => Math.random() - 0.5).slice(0, 3);
-  const opts = [w, ...others].sort(() => Math.random() - 0.5);
-  $("listen-options").innerHTML = opts.map(o => `<div class="option" data-word="${o.word}">${o.word}</div>`).join("");
-  document.querySelectorAll("#listen-options .option").forEach(el => {
-    el.onclick = () => {
-      if (el.dataset.word === w.word) {
-        el.classList.add("correct"); $("listen-feedback").textContent = "耳朵真灵！👂";
-        $("listen-feedback").className = "feedback good"; speak("Well done!"); setTimeout(() => nextStep(), 800);
-      } else {
-        el.classList.add("wrong"); $("listen-feedback").textContent = "再听一次试试～";
-        $("listen-feedback").className = "feedback bad"; speak("Listen again");
-      }
-    };
-  });
-  $("listen-feedback").textContent = ""; setTimeout(() => speakWord(), 400);
-}
-function renderRead() { $("read-word").textContent = WORDS[currentIndex].word; $("read-feedback").textContent = ""; }
-let recognition = null, isRecording = false, recordTarget = "";
-function initRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return null; const r = new SR(); r.lang = "en-US"; r.interimResults = false; r.maxAlternatives = 1; return r;
-}
-function toggleRecord() {
-  if (isRecording) return;
-  recognition = initRecognition();
-  if (!recognition) { $("read-feedback").textContent = "当前浏览器不支持语音识别，请用 Chrome 或 Edge"; $("read-feedback").className = "feedback bad"; return; }
-  recordTarget = WORDS[currentIndex].word;
-  recognition.onstart = () => { isRecording = true; $("mic-btn").classList.add("recording"); $("mic-label").textContent = "请说..."; $("read-feedback").textContent = "🎤 正在听..."; $("read-feedback").className = "feedback"; };
-  recognition.onresult = (e) => { compareRead(e.results[0][0].transcript.trim().toLowerCase(), recordTarget); };
-  recognition.onerror = () => { $("read-feedback").textContent = "没听清，再试一次～"; $("read-feedback").className = "feedback bad"; resetMic(); };
-  recognition.onend = () => resetMic(); recognition.start();
-}
-function resetMic() { isRecording = false; $("mic-btn").classList.remove("recording"); $("mic-label").textContent = "点我说"; }
-function compareRead(said, target) {
-  const s = said.replace(/[^a-z]/g, ""), t = target.replace(/[^a-z]/g, "");
-  if (s === t) { $("read-feedback").textContent = "读得太准了！🌟"; $("read-feedback").className = "feedback good"; speak("Excellent!"); setTimeout(() => nextStep(), 900); }
-  else if (s.includes(t) || t.includes(s)) { $("read-feedback").textContent = "很接近了，再读一遍～"; $("read-feedback").className = "feedback bad"; speak("Almost"); }
-  else { $("read-feedback").textContent = `你读的是“${said}”，再试试“${target}”`; $("read-feedback").className = "feedback bad"; speak("Try again"); }
-}
-function renderWrite() { $("write-trans").textContent = WORDS[currentIndex].trans; $("write-input").value = ""; $("write-feedback").textContent = ""; $("write-input").focus(); }
-function checkWrite() {
-  const w = WORDS[currentIndex];
-  const val = $("write-input").value.trim().toLowerCase();
-  if (val === w.word) { $("write-feedback").textContent = "写对啦！🏆"; $("write-feedback").className = "feedback good"; speak("Perfect!"); setTimeout(() => { addStar(); nextWord(); }, 900); }
-  else { $("write-feedback").textContent = `正确答案是：${w.word}`; $("write-feedback").className = "feedback bad"; }
-}
-function renderStep() {
-  document.querySelectorAll(".step").forEach(el => { const s = parseInt(el.dataset.step); el.classList.toggle("active", s === currentStep); el.classList.toggle("done", s < currentStep); });
-  $("panel-learn").classList.toggle("hidden", currentStep !== 0); $("panel-translate").classList.toggle("hidden", currentStep !== 1);
-  $("panel-spell").classList.toggle("hidden", currentStep !== 2); $("panel-listen").classList.toggle("hidden", currentStep !== 3);
-  $("panel-read").classList.toggle("hidden", currentStep !== 4); $("panel-write").classList.toggle("hidden", currentStep !== 5);
-  if (currentStep === 0) renderLearn(); if (currentStep === 1) renderTranslate(); if (currentStep === 2) renderSpell();
-  if (currentStep === 3) renderListen(); if (currentStep === 4) renderRead(); if (currentStep === 5) renderWrite();
-}
-function nextStep() { if (currentStep < 5) { currentStep++; renderStep(); } }
-function nextWord() { currentIndex = (currentIndex + 1) % WORDS.length; currentStep = 0; renderStep(); }
-function prevWord() { currentIndex = (currentIndex - 1 + WORDS.length) % WORDS.length; currentStep = 0; renderStep(); }
-function skipWord() { nextWord(); }
-
-/* === 5. 星星与打卡 === */
+/* ============================================================
+   其他功能（星星、日历、商城）
+   ============================================================ */
 function addStar() {
-  stars++; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
-  if (!checkedDays.includes(today)) { checkedDays.push(today); localStorage.setItem("checkedDays", JSON.stringify(checkedDays)); renderCalendar(); }
-}
-function renderCalendar() {
-  const cal = $("calendar"); cal.innerHTML = "";
-  const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate(); const todayStr = now.toISOString().slice(0, 10);
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const div = document.createElement("div"); div.className = "cal-day";
-    if (checkedDays.includes(dateStr)) div.classList.add("done"); if (dateStr === todayStr) div.classList.add("today");
-    div.textContent = d; cal.appendChild(div);
+  let stars = getStars() + 1;
+  saveStars(stars);
+  updateAllStarsUI();
+  const today = getTodayStr();
+  let checkedDays = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHECKED_DAYS) || '[]');
+  if (!checkedDays.includes(today)) {
+    checkedDays.push(today);
+    localStorage.setItem(STORAGE_KEYS.CHECKED_DAYS, JSON.stringify(checkedDays));
   }
 }
 
-/* === 6. 句子模块 === */
-let currentSentence = SENTENCES[0];
-function renderSentence() {
-  const seg = new Intl.Segmenter("en", { granularity: "word" });
-  const parts = [...seg.segment(currentSentence)];
-  $("sentence-box").innerHTML = parts.map(p => p.isWordLike ? `<span class="word" data-word="${p.segment.toLowerCase()}">${p.segment}</span>` : `<span>${p.segment}</span>`).join("");
-  document.querySelectorAll("#sentence-box .word").forEach(el => { el.onclick = () => showWordPopup(el.dataset.word); });
+function updateAllStarsUI() {
+  const stars = getStars();
+  document.getElementById('total-stars').textContent = stars;
 }
-let sentRecording = false;
-function toggleSentenceRecord() {
-  if (sentRecording) return; const r = initRecognition();
-  if (!r) { $("sentence-feedback").textContent = "当前浏览器不支持语音识别"; $("sentence-feedback").className = "feedback bad"; return; }
-  r.onstart = () => { sentRecording = true; $("sent-mic-btn").classList.add("recording"); $("sentence-feedback").textContent = "🎤 正在听整句..."; $("sentence-feedback").className = "feedback"; };
-  r.onresult = (e) => {
-    const said = e.results[0][0].transcript.trim(); const target = currentSentence.replace(/[^a-zA-Z ]/g, "").trim();
-    const sim = similarity(said.toLowerCase(), target.toLowerCase());
-    if (sim > 0.85) { $("sentence-feedback").textContent = `太棒了！相似度 ${Math.round(sim * 100)}% 🌟`; $("sentence-feedback").className = "feedback good"; speak("Excellent!"); }
-    else if (sim > 0.6) { $("sentence-feedback").textContent = `不错，再练练～ 相似度 ${Math.round(sim * 100)}%`; $("sentence-feedback").className = "feedback bad"; }
-    else { $("sentence-feedback").textContent = `再听一遍原句试试～ 相似度 ${Math.round(sim * 100)}%`; $("sentence-feedback").className = "feedback bad"; }
-  };
-  r.onerror = () => { $("sentence-feedback").textContent = "没听清，再试一次～"; $("sentence-feedback").className = "feedback bad"; };
-  r.onend = () => { sentRecording = false; $("sent-mic-btn").classList.remove("recording"); }; r.start();
-}
-function similarity(a, b) {
-  const m = a.length, n = b.length; const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
-  for (let i = 0; i <= m; i++) dp[i][0] = i; for (let j = 0; j <= n; j++) dp[0][j] = j;
-  for (let i = 1; i <= m; i++) { for (let j = 1; j <= n; j++) { dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]); } }
-  return 1 - dp[m][n] / Math.max(m, n);
-}
-function showWordPopup(word) {
-  const info = WORDS.find(w => w.word === word); $("pop-word").textContent = word;
-  if (info) { $("pop-phonetic").textContent = info.phonetic; $("pop-trans").textContent = info.trans; $("pop-syllable").textContent = info.syllables.join(" - "); $("pop-family").textContent = info.family; }
-  else { $("pop-phonetic").textContent = "—"; $("pop-trans").textContent = "（词库中暂未收录）"; $("pop-syllable").textContent = word.split("").join(" - "); $("pop-family").textContent = "—"; }
-  $("popup-mask").classList.add("show");
-}
-function closePopup() { $("popup-mask").classList.remove("show"); }
 
-/* === 7. 宠物养成 === */
-function renderPet() {
-  $("pet-avatar").textContent = petState.avatar;
-  $("pet-name").textContent = petState.name;
-  $("pet-level-text").textContent = `等级 ${petState.level} · ${petState.level < 3 ? "幼年期" : petState.level < 6 ? "成长期" : "成熟期"}`;
-  const maxExp = petState.level * 100;
-  $("pet-exp-text").textContent = `${petState.exp} / ${maxExp}`;
-  $("pet-exp-bar").style.width = Math.min((petState.exp / maxExp) * 100, 100) + "%";
-  $("pet-hunger-text").textContent = `${petState.hunger}%`;
-  $("pet-hunger-bar").style.width = petState.hunger + "%";
-  if (petState.level >= 6) $("pet-avatar").textContent = "🦁";
-  else if (petState.level >= 3) $("pet-avatar").textContent = "🐯";
-  else $("pet-avatar").textContent = petState.avatar;
+function renderCalendar() {
+  const cal = document.getElementById('calendar');
+  if (!cal) return;
+  cal.innerHTML = '';
+  const checkedDays = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHECKED_DAYS) || '[]');
+  const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = getTodayStr();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const div = document.createElement('div');
+    div.className = 'cal-day';
+    if (checkedDays.includes(dateStr)) div.classList.add('done');
+    if (dateStr === todayStr) div.classList.add('today');
+    div.textContent = d;
+    cal.appendChild(div);
+  }
 }
-function feedPet() {
-  if (stars < 5) { $("pet-feedback").textContent = "星星不够啦，快去打卡赚星星吧！"; $("pet-feedback").className = "feedback bad"; speak("Not enough stars"); return; }
-  stars -= 5; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
-  petState.hunger = Math.min(petState.hunger + 20, 100); petState.exp += 15;
-  const maxExp = petState.level * 100;
-  if (petState.exp >= maxExp) { petState.level++; petState.exp = 0; $("pet-feedback").textContent = `🎉 升级啦！${petState.name} 现在 ${petState.level} 级了！`; speak("Level up! Great job!"); }
-  else { $("pet-feedback").textContent = "小宠物吃得很开心！😋"; speak("Yummy!"); }
-  $("pet-feedback").className = "feedback good"; savePetState(); renderPet();
-}
-function patPet() { $("pet-feedback").textContent = "小宠物蹭了蹭你的手～ 🐾"; $("pet-feedback").className = "feedback good"; speak("Purr..."); }
-function savePetState() { localStorage.setItem("petState", JSON.stringify(petState)); }
 
-/* === 8. 兑换商城 === */
 function renderShop() {
-  const grid = $("shop-grid"); grid.innerHTML = "";
-  if (shopItems.length === 0) { grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 20px;'>还没有奖品，请在下方添加吧～</div>"; return; }
-  shopItems.forEach(item => {
-    const div = document.createElement("div"); div.className = "shop-item";
+  const grid = document.getElementById('shop-grid');
+  if (!grid) return;
+  const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHOP) || '[]');
+  grid.innerHTML = '';
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'shop-item';
     div.innerHTML = `
-      <div class="shop-icon">${item.icon}</div>
-      <div class="shop-name">${item.name}</div>
-      <div class="shop-cost">⭐ ${item.cost}</div>
-      <button class="shop-btn secondary" onclick="redeemItem(${item.id})">兑换</button>
+      <div style="font-size: 36px; margin-bottom: 8px;">${item.icon}</div>
+      <div style="font-size: 15px; font-weight: 700; margin-bottom: 8px;">${item.name}</div>
+      <div style="color: var(--orange); font-weight: 700; font-size: 16px; margin-bottom: 12px;">⭐ ${item.cost}</div>
+      <button class="secondary" style="width: 100%; padding: 10px; font-size: 14px;" onclick="redeemItem(${item.id})">兑换</button>
     `;
     grid.appendChild(div);
   });
 }
+
 function redeemItem(id) {
-  const item = shopItems.find(i => i.id === id); if (!item) return;
+  const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHOP) || '[]');
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  const stars = getStars();
   if (stars < item.cost) { alert(`星星不够啦！还需要 ${item.cost - stars} 颗星星哦～`); speak("Not enough stars"); return; }
   if (confirm(`确定要花 ${item.cost} 颗星星兑换「${item.name}」吗？`)) {
-    stars -= item.cost; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
-    alert(`🎉 兑换成功！请找家长领取「${item.name}」吧！`); speak("Congratulations! You got a reward!");
+    saveStars(stars - item.cost);
+    updateAllStarsUI();
+    alert(`🎉 兑换成功！请找家长领取「${item.name}」吧！`);
+    speak("Congratulations! You got a reward!");
   }
 }
+
 function addShopItem() {
-  const name = $("new-item-name").value.trim(); const cost = parseInt($("new-item-cost").value); const icon = $("new-item-icon").value.trim() || "🎁";
+  const name = document.getElementById('new-item-name').value.trim();
+  const cost = parseInt(document.getElementById('new-item-cost').value);
   if (!name || !cost || cost <= 0) { alert("请填写完整的奖品名称和所需星星数！"); return; }
-  shopItems.push({ id: Date.now(), name, cost, icon });
-  localStorage.setItem("shopItems", JSON.stringify(shopItems)); renderShop();
-  $("new-item-name").value = ""; $("new-item-cost").value = ""; $("new-item-icon").value = ""; alert("奖品添加成功！");
+  const items = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHOP) || '[]');
+  items.push({ id: Date.now(), name, cost, icon: "🎁" });
+  localStorage.setItem(STORAGE_KEYS.SHOP, JSON.stringify(items));
+  renderShop();
+  document.getElementById('new-item-name').value = '';
+  document.getElementById('new-item-cost').value = '';
+  alert("奖品添加成功！");
 }
 
-/* === 9. 全局 UI 更新 === */
-function updateAllStarsUI() {
-  $("total-stars").textContent = stars; $("home-stars").textContent = stars; $("shop-stars").textContent = stars;
-  // 更新首页进度条（模拟今日完成度）
-  const todayCount = checkedDays.includes(today) ? 5 : 0; // 简化逻辑，实际可根据真实进度
-  $("home-progress-text").textContent = `已完成 ${todayCount}/5`;
-  $("home-progress-bar").style.width = (todayCount / 5 * 100) + "%";
+/* ============================================================
+   初始化与切换
+   ============================================================ */
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.getElementById(tabId).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  if (tabId === 'tab-home') renderHome();
+  if (tabId === 'tab-wordbooks') renderWordbooks();
+  if (tabId === 'tab-more') { renderCalendar(); renderShop(); }
 }
 
-/* === 10. 初始化 === */
+function closePopup() { document.getElementById('popup-mask').style.display = 'none'; }
+
 function init() {
   // 预加载语音列表
   if (window.speechSynthesis) {
@@ -685,13 +907,10 @@ function init() {
     window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; };
   }
   updateAllStarsUI();
+  renderHome();
+  renderWordbooks();
   renderCalendar();
-  renderStep();
-  renderSentence();
-  renderPet();
   renderShop();
-  let sIdx = 0; setInterval(() => { sIdx = (sIdx + 1) % SENTENCES.length; currentSentence = SENTENCES[sIdx]; renderSentence(); }, 30000);
-  if (petState.hunger > 10) { petState.hunger = Math.max(petState.hunger - 5, 0); savePetState(); renderPet(); }
 }
 init();
 </script>
