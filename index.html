@@ -2,153 +2,237 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>英语打卡工作台</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(160deg, #e3f2fd, #fce4ec); min-height: 100vh; padding: 16px; color: #2c3e50; }
-  .card { background: #fff; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 720px; margin: 0 auto 16px; }
-  h1 { font-size: 20px; text-align: center; margin-bottom: 4px; }
-  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
+  :root {
+    --bg-colorF7;
+    --card-bg: #FFFFFF;
+    --text-main: #1C1C1E;
+    --text-sub: #8E8E93;
+    --blue: #007AFF;
+    --green: #34C759;
+    --orange: #FF9500;
+    --red: #FF3B30;
+    --gray: #E5E5EA;
+  }
   
-  /* 顶部导航栏 */
-  .nav-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; }
-  .nav-btn { flex: 1 1 30%; padding: 10px 4px; border: none; border-radius: 12px; font-size: 14px; font-weight: bold; background: #e0e0e0; color: #666; cursor: pointer; transition: 0.2s; }
-  .nav-btn.active { background: #4a90e2; color: #fff; box-shadow: 0 3px 0 #357abd; }
-  .nav-btn:active { transform: translateY(2px); }
-  .tab-content { display: block; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text-main);
+    min-height: 100vh; 
+    padding: 20px 16px 100px 16px; /* 底部留出导航栏空间 */
+    line-height: 1.5;
+  }
+
   .hidden { display: none !important; }
 
-  /* 步骤条 */
-  .steps { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
-  .step { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; background: #e0e0e0; color: #999; }
-  .step.active { background: #4a90e2; color: #fff; box-shadow: 0 0 0 4px rgba(74,144,226,0.2); }
-  .step.done { background: #66bb6a; color: #fff; }
-  .word-display { text-align: center; font-size: 44px; font-weight: bold; letter-spacing: 2px; margin: 20px 0 10px; color: #1a237e; }
-  .syllable { display: inline-block; padding: 2px 6px; border-radius: 8px; margin: 0 2px; }
-  .phonetic { text-align: center; font-size: 18px; color: #555; margin-bottom: 6px; }
-  .translation { text-align: center; font-size: 20px; color: #444; margin-bottom: 20px; }
-  .btn-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
-  button { border: none; border-radius: 14px; padding: 12px 22px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; background: #4a90e2; color: #fff; box-shadow: 0 3px 0 #357abd; }
-  button:hover { transform: translateY(-1px); }
-  button:active { transform: translateY(2px); box-shadow: 0 1px 0 #357abd; }
-  button.secondary { background: #fff; color: #4a90e2; border: 2px solid #4a90e2; box-shadow: 0 3px 0 #d0e3f7; }
-  button.success { background: #66bb6a; box-shadow: 0 3px 0 #4caf50; }
-  button.warn { background: #ffa726; box-shadow: 0 3px 0 #ef6c00; }
-  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-  .option { padding: 14px; border-radius: 14px; background: #f5f9ff; border: 2px solid #d6e6f7; text-align: center; font-size: 18px; cursor: pointer; transition: all 0.15s; }
-  .option:hover { background: #e3f0ff; }
-  .option.correct { background: #c8e6c9; border-color: #66bb6a; }
-  .option.wrong { background: #ffcdd2; border-color: #e53935; }
-  .letters { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-  .letter { width: 46px; height: 46px; border-radius: 10px; background: #fff3e0; border: 2px solid #ffcc80; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; color: #e65100; cursor: pointer; transition: all 0.15s; }
-  .letter:hover { background: #ffe0b2; }
-  .letter.used { opacity: 0.3; pointer-events: none; }
-  .spell-input { display: flex; justify-content: center; gap: 8px; margin: 12px 0; }
-  .spell-slot { width: 46px; height: 46px; border-bottom: 3px solid #4a90e2; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
-  .mic-btn { width: 90px; height: 90px; border-radius: 50%; background: #ff7043; box-shadow: 0 4px 0 #d84315; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 16px auto; }
-  .mic-btn.recording { background: #e53935; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.08);} }
-  .feedback { text-align: center; font-size: 20px; font-weight: bold; min-height: 30px; margin: 10px 0; }
-  .feedback.good { color: #2e7d32; }
-  .feedback.bad { color: #c62828; }
-  .sentence { font-size: 22px; line-height: 1.8; text-align: center; margin: 16px 0; padding: 16px; background: #fafafa; border-radius: 14px; }
-  .sentence .word { cursor: pointer; padding: 2px 4px; border-radius: 6px; transition: background 0.15s; }
-  .sentence .word:hover { background: #e3f2fd; }
-  .sentence .word.highlight { background: #fff59d; }
-  .popup-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: center; justify-content: center; z-index: 100; }
-  .popup-mask.show { display: flex; }
-  .popup { background: #fff; border-radius: 20px; padding: 24px; max-width: 360px; width: 90%; position: relative; animation: pop 0.2s ease-out; }
-  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .popup h3 { font-size: 26px; text-align: center; color: #1a237e; margin-bottom: 8px; }
-  .popup .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 15px; }
-  .popup .row span:first-child { color: #888; }
-  .popup .close { position: absolute; top: 12px; right: 16px; font-size: 22px; cursor: pointer; color: #aaa; }
-  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
-  .cal-day { aspect-ratio: 1; border-radius: 8px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; }
-  .cal-day.done { background: #66bb6a; color: #fff; font-weight: bold; }
-  .cal-day.today { outline: 2px solid #4a90e2; }
-  .center { text-align: center; }
+  /* === 页面通用标题 === */
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 20px; padding-left: 4px; }
   
-  /* 宠物养成模块样式 */
-  .pet-container { text-align: center; padding: 20px; background: #fdfbf7; border-radius: 16px; border: 2px dashed #ffcc80; margin-bottom: 16px; }
-  .pet-avatar { font-size: 80px; line-height: 1; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  .pet-status { display: flex; justify-content: space-around; margin-top: 16px; font-size: 16px; font-weight: bold; color: #555; }
-  .progress-bar { width: 100%; height: 16px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #ffb347, #ffcc33); width: 0%; transition: width 0.5s; }
-  .progress-fill.green { background: linear-gradient(90deg, #66bb6a, #43a047); }
+  /* === 卡片样式 === */
+  .card { 
+    background: var(--card-bg); 
+    border-radius: 20px; 
+    padding: 24px; 
+    margin-bottom: 16px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+    position: relative;
+  }
 
-  /* 兑换商城模块样式 */
+  /* === 进度条 === */
+  .progress-card { padding: 20px 24px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .progress-header h2 { font-size: 20px; font-weight: 700; }
+  .progress-header span { font-size: 14px; color: var(--text-sub); font-weight: 500; }
+  .progress-bar-bg { width: 100%; height: 12px; background: var(--gray); border-radius: 6px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--blue); width: 0%; border-radius: 6px; transition: width 0.3s ease; }
+
+  /* === 按钮 === */
+  button { 
+    border: none; 
+    border-radius: 14px; 
+    padding: 14px 20px; 
+    font-size: 16px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); 
+    background: var(--blue); 
+    color: #fff; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    gap: 6px;
+  }
+  button:active { transform: scale(0.97); opacity: 0.9; }
+  button.secondary { background: var(--gray); color: var(--blue); }
+  button.success { background: var(--green); }
+  button.warn { background: var(--orange); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* === 底部导航栏 === */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex; justify-content: space-around;
+    padding: 10px 0 24px 0; /* 适配 iPhone 底部横条 */
+    border-top: 1px solid var(--gray);
+    z-index: 1000;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: none; border: none; box-shadow: none;
+    color: var(--text-sub); font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 12px; min-width: 60px;
+  }
+  .nav-item.active { color: var(--blue); }
+  .nav-item .nav-icon { font-size: 22px; margin-bottom: -2px; }
+
+  /* === 单词打卡步骤条 === */
+  .steps { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+  .step { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: var(--gray); color: var(--text-sub); transition: 0.2s; }
+  .step.active { background: var(--blue); color: #fff; transform: scale(1.1); }
+  .step.done { background: var(--green); color: #fff; }
+
+  /* === 单词展示区域 === */
+  .word-display { text-align: center; font-size: 46px; font-weight: 800; letter-spacing: 1px; margin: 20px 0 10px; color: var(--text-main); }
+  .syllable { display: inline-block; padding: 2px 6px; border-radius: 8px; margin: 0 2px; }
+  .phonetic { text-align: center; font-size: 18px; color: var(--text-sub); margin-bottom: 8px; }
+  .translation { text-align: center; font-size: 20px; color: var(--text-main); font-weight: 600; margin-bottom: 24px; }
+  .btn-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+
+  /* === 选项与拼写 === */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .option { padding: 16px; border-radius: 16px; background: var(--bg-color); border: 2px solid transparent; text-align: center; font-size: 18px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+  .option:hover { background: #EBEBF0; }
+  .option.correct { background: #E8F8EE; border-color: var(--green); color: var(--green); }
+  .option.wrong { background: #FFEDED; border-color: var(--red); color: var(--red); }
+  .letters { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .letter { width: 48px; height: 48px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--gray); box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--text-main); cursor: pointer; transition: 0.15s; }
+  .letter:hover { background: #F9F9FB; }
+  .letter.used { opacity: 0.2; pointer-events: none; box-shadow: none; border-color: transparent; }
+  .spell-input { display: flex; justify-content: center; gap: 8px; margin: 16px 0; }
+  .spell-slot { width: 48px; height: 48px; border-bottom: 3px solid var(--blue); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; }
+
+  /* === 录音按钮 === */
+  .mic-btn { width: 90px; height: 90px; border-radius: 50%; background: var(--orange); box-shadow: 0 4px 15px rgba(255,149,0,0.3); font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; border: none; }
+  .mic-btn.recording { background: var(--red); box-shadow: 0 0 0 10px rgba(255,59,48,0.15); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+  /* === 反馈文本 === */
+  .feedback { text-align: center; font-size: 18px; font-weight: 600; min-height: 30px; margin: 12px 0; }
+  .feedback.good { color: var(--green); }
+  .feedback.bad { color: var(--red); }
+
+  /* === 句子区域 === */
+  .sentence { font-size: 22px; line-height: 1.8; text-align: center; margin: 16px 0; padding: 20px; background: var(--bg-color); border-radius: 16px; font-weight: 500; }
+  .sentence .word { cursor: pointer; padding: 4px 6px; border-radius: 8px; transition: background 0.15s; }
+  .sentence .word:hover { background: rgba(0,122,255,0.1); }
+  .sentence .word.highlight { background: #FFE5B4; }
+  .sentence .word.good { color: var(--green); }
+  .sentence .word.bad { color: var(--red); text-decoration: underline wavy var(--red); }
+
+  /* === 弹窗 === */
+  .popup-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+  .popup-mask.show { display: flex; }
+  .popup { background: var(--card-bg); border-radius: 24px; padding: 28px; max-width: 340px; width: 90%; position: relative; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .popup h3 { font-size: 28px; text-align: center; color: var(--text-main); margin-bottom: 16px; font-weight: 800; }
+  .popup .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray); font-size: 16px; }
+  .popup .row span:first-child { color: var(--text-sub); }
+  .popup .row span:last-child { font-weight: 600; }
+  .popup .close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-sub); background: none; border: none; padding: 4px; }
+
+  /* === 打卡日历 === */
+  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 16px; }
+  .cal-day { aspect-ratio: 1; border-radius: 10px; background: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--text-sub); }
+  .cal-day.done { background: var(--green); color: #fff; font-weight: 700; }
+  .cal-day.today { outline: 2px solid var(--blue); }
+
+  /* === 宠物养成 === */
+  .pet-card { text-align: center; padding: 30px 20px; }
+  .pet-avatar { font-size: 90px; line-height: 1; margin-bottom: 12px; display: inline-block; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .pet-name { font-size: 24px; font-weight: 800; color: var(--text-main); }
+  .pet-level-text { font-size: 14px; color: var(--text-sub); margin-top: 4px; font-weight: 500; }
+  .pet-status-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; font-weight: 500; }
+  .pet-progress-bg { width: 100%; height: 10px; background: var(--gray); border-radius: 5px; overflow: hidden; margin-bottom: 16px; }
+  .pet-progress-fill { height: 100%; border-radius: 5px; transition: width 0.4s ease; }
+  .pet-progress-fill.exp { background: linear-gradient(90deg, #FFB347, #FFCC33); }
+  .pet-progress-fill.hunger { background: linear-gradient(90deg, #FF6B6B, #FF8E8E); }
+
+  /* === 商城 === */
   .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-  .shop-item { background: #fdfdfd; border: 2px solid #e0e0e0; border-radius: 16px; padding: 16px; text-align: center; transition: all 0.2s; }
-  .shop-item:hover { border-color: #4a90e2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.15); }
-  .shop-icon { font-size: 40px; margin-bottom: 8px; }
-  .shop-name { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 8px; }
-  .shop-cost { color: #ffa726; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
-  .shop-btn { width: 100%; padding: 8px; font-size: 14px; border-radius: 10px; }
-  .add-item-area { background: #f9f9f9; border-radius: 14px; padding: 16px; margin-top: 20px; }
-  .add-item-area input { padding: 10px; border: 2px solid #d6e6f7; border-radius: 10px; font-size: 14px; width: 100%; margin-bottom: 10px; outline: none; }
+  .shop-item { background: var(--card-bg); border: 1px solid var(--gray); border-radius: 16px; padding: 16px; text-align: center; transition: 0.2s; }
+  .shop-item:active { transform: scale(0.98); }
+  .shop-icon { font-size: 36px; margin-bottom: 8px; }
+  .shop-name { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+  .shop-cost { color: var(--orange); font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+  .shop-btn { width: 100%; padding: 10px; font-size: 14px; border-radius: 10px; }
+  .add-item-area { background: var(--bg-color); border-radius: 16px; padding: 20px; margin-top: 20px; }
+  .add-item-area input { padding: 12px; border: 1px solid var(--gray); border-radius: 12px; font-size: 15px; width: 100%; margin-bottom: 12px; outline: none; transition: 0.2s; background: var(--card-bg); }
+  .add-item-area input:focus { border-color: var(--blue); }
+  .add-item-area button { width: 100%; }
 </style>
 </head>
 <body>
 
-<!-- 导航栏 -->
-<div class="nav-bar">
-  <button class="nav-btn active" onclick="switchTab('tab-home', this)">🐾 宠物首页</button>
-  <button class="nav-btn" onclick="switchTab('tab-words', this)">📖 单词打卡</button>
-  <button class="nav-btn" onclick="switchTab('tab-sentences', this)">📝 句子练习</button>
-  <button class="nav-btn" onclick="switchTab('tab-calendar', this)">📅 打卡记录</button>
-  <button class="nav-btn" onclick="switchTab('tab-shop', this)">🎁 兑换商城</button>
-</div>
-
 <!-- ================= 模块1：宠物首页 ================= -->
 <div id="tab-home" class="tab-content">
-  <div class="card">
-    <h1>🐾 我的小宠物</h1>
-    <div class="subtitle">完成打卡赚星星，喂饱小宠物吧！</div>
-    
-    <div class="pet-container">
-      <div class="pet-avatar" id="pet-avatar">🐱</div>
-      <div style="font-size: 22px; font-weight: bold; color: #1a237e;" id="pet-name">小猫咪</div>
-      <div style="font-size: 14px; color: #888; margin-top: 4px;" id="pet-level-text">等级 1 · 幼年期</div>
-      
-      <!-- 经验条 -->
-      <div style="margin-top: 16px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px;">
-          <span>成长经验</span>
-          <span id="pet-exp-text">0 / 100</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill green" id="pet-exp-bar" style="width: 0%;"></div></div>
-      </div>
-      
-      <!-- 饥饿度条 -->
-      <div style="margin-top: 12px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px;">
-          <span>饱食度</span>
-          <span id="pet-hunger-text">80%</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" id="pet-hunger-bar" style="width: 80%;"></div></div>
-      </div>
+  <div class="page-title">今日计划</div>
+  
+  <!-- 进度卡片（模仿截图的圆环进度） -->
+  <div class="card progress-card">
+    <div class="progress-header">
+      <h2>任务进度</h2>
+      <span id="home-progress-text">已完成 0/5</span>
     </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="home-progress-bar" style="width: 0%;"></div>
+    </div>
+    <div style="margin-top: 12px; font-size: 13px; color: var(--text-sub);">⭐ 加油！继续完成打卡赚星星吧～</div>
+  </div>
 
-    <div class="btn-row">
-      <button class="success" onclick="feedPet()">🍖 喂食（消耗5⭐）</button>
-      <button class="secondary" onclick="patPet()">🤚 摸摸它</button>
-    </div>
-    <div class="feedback" id="pet-feedback"></div>
+  <!-- 宠物养成卡片 -->
+  <div class="card pet-card">
+    <div class="pet-avatar" id="pet-avatar">🐱</div>
+    <div class="pet-name" id="pet-name">小猫咪</div>
+    <div class="pet-level-text" id="pet-level-text">等级 1 · 幼年期</div>
     
-    <div class="center" style="margin-top: 16px;">
-      <span style="font-size: 18px; font-weight: bold;">⭐ 当前星星：<span id="home-stars" style="color: #ffa726;">0</span></span>
+    <div style="margin-top: 24px; text-align: left;">
+      <div class="pet-status-row">
+        <span>成长经验</span>
+        <span id="pet-exp-text">0 / 100</span>
+      </div>
+      <div class="pet-progress-bg"><div class="pet-progress-fill exp" id="pet-exp-bar" style="width: 0%;"></div></div>
+      
+      <div class="pet-status-row" style="margin-top: 16px;">
+        <span>饱食度</span>
+        <span id="pet-hunger-text">80%</span>
+      </div>
+      <div class="pet-progress-bg"><div class="pet-progress-fill hunger" id="pet-hunger-bar" style="width: 80%;"></div></div>
     </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="success" style="flex:1;" onclick="feedPet()">🍖 喂食（消耗5⭐）</button>
+    <button class="secondary" style="flex:1;" onclick="patPet()">🤚 摸摸它</button>
+  </div>
+  <div class="feedback" id="pet-feedback"></div>
+  
+  <div style="text-align: center; margin-top: 12px;">
+    <span style="font-size: 18px; font-weight: 700;">⭐ 当前星星：<span id="home-stars" style="color: var(--orange);">0</span></span>
   </div>
 </div>
 
 <!-- ================= 模块2：单词打卡 ================= -->
 <div id="tab-words" class="tab-content hidden">
+  <div class="page-title">单词打卡</div>
   <div class="card">
-    <h1>🌈 英语单词打卡</h1>
-    <div class="subtitle">每天 5 个单词，学译拼听读写全搞定</div>
     <div class="steps" id="steps">
       <div class="step active" data-step="0">学</div>
       <div class="step" data-step="1">译</div>
@@ -165,11 +249,11 @@
         <button onclick="speakWord()">🔊 听发音</button>
         <button class="secondary" onclick="slowSpeakWord()">🐢 慢速</button>
       </div>
-      <div class="center"><button class="success" onclick="nextStep()">我学会了 ➜</button></div>
+      <div style="text-align: center; margin-top: 20px;"><button class="success" style="width: 80%;" onclick="nextStep()">我学会了 ➜</button></div>
     </div>
     <div id="panel-translate" class="hidden">
       <div class="word-display" id="trans-word"></div>
-      <div class="center" style="color:#888;margin-bottom:12px;">选出正确的中文意思</div>
+      <div style="text-align: center; color: var(--text-sub); margin-bottom: 12px; font-size: 14px;">选出正确的中文意思</div>
       <div class="options" id="trans-options"></div>
       <div class="feedback" id="trans-feedback"></div>
     </div>
@@ -178,45 +262,44 @@
       <div class="spell-input" id="spell-slots"></div>
       <div class="letters" id="spell-letters"></div>
       <div class="feedback" id="spell-feedback"></div>
-      <div class="center"><button class="warn" onclick="resetSpell()">🔄 重来</button></div>
+      <div style="text-align: center;"><button class="warn" onclick="resetSpell()">🔄 重来</button></div>
     </div>
     <div id="panel-listen" class="hidden">
-      <div class="center" style="font-size:60px;margin:20px 0;">👂</div>
-      <div class="center"><button onclick="speakWord()">🔊 再听一遍</button></div>
-      <div class="options" id="listen-options" style="margin-top:20px;"></div>
+      <div style="text-align: center; font-size: 60px; margin: 20px 0;">👂</div>
+      <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 再听一遍</button></div>
+      <div class="options" id="listen-options" style="margin-top: 20px;"></div>
       <div class="feedback" id="listen-feedback"></div>
     </div>
     <div id="panel-read" class="hidden">
       <div class="word-display" id="read-word"></div>
-      <div class="center"><button onclick="speakWord()">🔊 听标准发音</button></div>
+      <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 听标准发音</button></div>
       <button class="mic-btn" id="mic-btn" onclick="toggleRecord()">
-        <span style="font-size:26px;">🎤</span>
-        <span id="mic-label">点我说</span>
+        <span style="font-size: 26px;">🎤</span>
+        <span id="mic-label" style="font-size: 12px; margin-top: 4px;">点我说</span>
       </button>
       <div class="feedback" id="read-feedback"></div>
-      <div class="center"><button class="secondary" onclick="nextStep()">跳过，下一个 ➜</button></div>
+      <div style="text-align: center;"><button class="secondary" onclick="nextStep()">跳过，下一个 ➜</button></div>
     </div>
     <div id="panel-write" class="hidden">
       <div class="translation" id="write-trans"></div>
-      <div class="center" style="margin:16px 0;">
-        <input id="write-input" type="text" autocomplete="off" autocapitalize="off" style="font-size:28px;text-align:center;width:80%;padding:12px;border:2px solid #4a90e2;border-radius:14px;outline:none;">
+      <div style="text-align: center; margin: 16px 0;">
+        <input id="write-input" type="text" autocomplete="off" autocapitalize="off" style="font-size: 28px; text-align: center; width: 80%; padding: 16px; border: 2px solid var(--gray); border-radius: 16px; outline: none; font-weight: 700; transition: 0.2s;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--gray)'">
       </div>
-      <div class="center"><button class="success" onclick="checkWrite()">✅ 检查</button></div>
+      <div style="text-align: center;"><button class="success" style="width: 80%;" onclick="checkWrite()">✅ 检查</button></div>
       <div class="feedback" id="write-feedback"></div>
     </div>
-    <div class="btn-row" style="margin-top:24px;">
+    <div class="btn-row" style="margin-top: 24px;">
       <button class="secondary" onclick="prevWord()">⬅ 上一个</button>
       <button class="secondary" onclick="skipWord()">⏭ 跳过</button>
-      <button onclick="nextWord()">下一个单词 ➡</button>
+      <button onclick="nextWord()">下一个 ➡</button>
     </div>
   </div>
 </div>
 
 <!-- ================= 模块3：句子练习 ================= -->
 <div id="tab-sentences" class="tab-content hidden">
+  <div class="page-title">句子练习</div>
   <div class="card">
-    <h1>📖 句子打卡</h1>
-    <div class="subtitle">点击句子中的单词可以查看详情哦</div>
     <div class="sentence" id="sentence-box"></div>
     <div class="btn-row">
       <button onclick="speakSentence()">🔊 整句带读</button>
@@ -229,54 +312,67 @@
 
 <!-- ================= 模块4：打卡记录 ================= -->
 <div id="tab-calendar" class="tab-content hidden">
+  <div class="page-title">打卡记录</div>
   <div class="card">
-    <h1>📅 打卡记录</h1>
-    <div class="subtitle">每天完成一轮，点亮一颗星</div>
     <div class="calendar" id="calendar"></div>
-    <div class="center" style="margin-top:12px;font-size:18px;">
-      ⭐ 总星星：<span id="total-stars" style="color:#ffa726;font-weight:bold;">0</span>
+    <div style="text-align: center; margin-top: 16px; font-size: 18px; font-weight: 700;">
+      ⭐ 总星星：<span id="total-stars" style="color: var(--orange);">0</span>
     </div>
   </div>
 </div>
 
 <!-- ================= 模块5：兑换商城 ================= -->
 <div id="tab-shop" class="tab-content hidden">
+  <div class="page-title">兑换商城</div>
   <div class="card">
-    <h1>🎁 兑换商城</h1>
-    <div class="subtitle">用努力赚来的星星，兑换喜欢的奖励吧！</div>
-    <div class="center" style="margin-bottom: 16px; font-size: 18px; font-weight: bold;">
-      ⭐ 可用星星：<span id="shop-stars" style="color: #ffa726;">0</span>
+    <div style="text-align: center; margin-bottom: 16px; font-size: 16px; font-weight: 700;">
+      ⭐ 可用星星：<span id="shop-stars" style="color: var(--orange);">0</span>
     </div>
-
-    <div class="shop-grid" id="shop-grid">
-      <!-- 商品列表由 JS 动态渲染 -->
-    </div>
-
+    <div class="shop-grid" id="shop-grid"></div>
     <div class="add-item-area">
-      <h3 style="font-size: 15px; margin-bottom: 10px; color: #555;">🛠️ 家长自定义奖品</h3>
+      <h3 style="font-size: 15px; margin-bottom: 12px; color: var(--text-sub); font-weight: 600;">🛠️ 家长自定义奖品</h3>
       <input type="text" id="new-item-name" placeholder="奖品名称，如：看动画片30分钟">
       <input type="number" id="new-item-cost" placeholder="需要星星数，如：50">
       <input type="text" id="new-item-icon" placeholder="图标（可选），如：📺">
-      <button class="secondary" style="width: 100%;" onclick="addShopItem()">➕ 添加奖品</button>
+      <button class="secondary" onclick="addShopItem()">➕ 添加奖品</button>
     </div>
   </div>
+</div>
+
+<!-- 底部导航栏 -->
+<div class="bottom-nav">
+  <button class="nav-item active" onclick="switchTab('tab-home', this)">
+    <span class="nav-icon">🏠</span><span>首页</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('tab-words', this)">
+    <span class="nav-icon">📖</span><span>单词</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('tab-sentences', this)">
+    <span class="nav-icon">📝</span><span>句子</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('tab-calendar', this)">
+    <span class="nav-icon">📅</span><span>记录</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('tab-shop', this)">
+    <span class="nav-icon">🎁</span><span>商城</span>
+  </button>
 </div>
 
 <!-- 单词详情弹窗 -->
 <div class="popup-mask" id="popup-mask" onclick="if(event.target===this)closePopup()">
   <div class="popup">
-    <span class="close" onclick="closePopup()">✕</span>
+    <button class="close" onclick="closePopup()">✕</button>
     <h3 id="pop-word"></h3>
     <div class="row"><span>音标</span><span id="pop-phonetic"></span></div>
     <div class="row"><span>翻译</span><span id="pop-trans"></span></div>
     <div class="row"><span>音节</span><span id="pop-syllable"></span></div>
     <div class="row"><span>词族</span><span id="pop-family"></span></div>
-    <div class="center" style="margin-top:16px;"><button onclick="speakPopupWord()">🔊 听发音</button></div>
+    <div style="text-align: center; margin-top: 20px;"><button onclick="speakPopupWord()">🔊 听发音</button></div>
   </div>
 </div>
 
 <script>
-/* === 1. 词库与句子 === */
+/* === 1. 数据 === */
 const WORDS = [
   { word: "cat", phonetic: "/kæt/", trans: "猫", syllables: ["c","a","t"], family: "-at 家族" },
   { word: "hat", phonetic: "/hæt/", trans: "帽子", syllables: ["h","a","t"], family: "-at 家族" },
@@ -290,17 +386,11 @@ const WORDS = [
   { word: "cake", phonetic: "/keɪk/", trans: "蛋糕", syllables: ["c","a","ke"], family: "a-e 魔法e" }
 ];
 const SENTENCES = ["I have a new stationery.", "The cat is on the mat.", "Look at the fish in the water."];
-
-/* === 2. 全局状态 === */
 let currentIndex = 0, currentStep = 0;
 let stars = JSON.parse(localStorage.getItem("stars") || "0");
 let checkedDays = JSON.parse(localStorage.getItem("checkedDays") || "[]");
 let today = new Date().toISOString().slice(0, 10);
-
-// 宠物状态
 let petState = JSON.parse(localStorage.getItem("petState") || '{"name":"小猫咪","level":1,"exp":0,"hunger":80,"avatar":"🐱"}');
-
-// 商城商品状态 (默认列表)
 let shopItems = JSON.parse(localStorage.getItem("shopItems") || JSON.stringify([
   { id: 1, name: "看动画片30分钟", cost: 50, icon: "📺" },
   { id: 2, name: "买一个小玩具", cost: 200, icon: "🧸" },
@@ -310,25 +400,21 @@ let shopItems = JSON.parse(localStorage.getItem("shopItems") || JSON.stringify([
 
 function $(id) { return document.getElementById(id); }
 
-/* === 3. 切换模块逻辑 === */
+/* === 2. 切换逻辑 === */
 function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   $(tabId).classList.remove('hidden');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===== 替换为中考听力标准音色 + 慢速优化 ===== */
+/* === 3. 语音功能（替换为中考听力标准音色 + 慢速优化）=== */
 let cachedVoice = null;
-
 function getBestVoice() {
-  // 如果已经缓存了音色，直接返回
   if (cachedVoice) return cachedVoice;
-  
   const voices = window.speechSynthesis.getVoices();
   if (voices.length === 0) return null;
-
-  // 优先匹配微软的自然音色（中考听力最常用 Aria 和 Guy）
   cachedVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural') && v.lang.startsWith('en-US')) ||
                 voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural') && v.lang.startsWith('en')) ||
                 voices.find(v => v.name.includes('Microsoft') && v.lang.startsWith('en-US')) ||
@@ -336,42 +422,25 @@ function getBestVoice() {
                 voices.find(v => v.lang.startsWith('en'));
   return cachedVoice;
 }
-
 function speak(text, rate = 0.8) {
   if (!window.speechSynthesis) { alert("当前浏览器不支持语音合成"); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  
-  // 应用筛选出的最佳音色
   const voice = getBestVoice();
-  if (voice) {
-    u.voice = voice;
-    u.lang = voice.lang;
-  } else {
-    u.lang = "en-US"; // 兜底方案
-  }
-  
-  u.rate = rate; // 正常语速调至 0.8
+  if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = "en-US"; }
+  u.rate = rate;
   speechSynthesis.speak(u);
 }
-
-// 正常速度
 function speakWord() { speak(WORDS[currentIndex].word); }
-
-// 🌟 慢速：从原来的 0.55 调到更慢的 0.4，方便孩子跟读
-function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.4); }
-
-// 弹窗单词发音
+function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.4); } // 慢速调到 0.4
 function speakPopupWord() { speak($("pop-word").textContent); }
-
-// 句子发音（同样受益于新音色和慢速优化）
 function speakSentence() { speak(currentSentence, 0.8); }
 function slowSpeakSentence() { speak(currentSentence, 0.4); }
 
-/* === 5. 单词打卡模块 === */
+/* === 4. 单词打卡 === */
 function renderLearn() {
   const w = WORDS[currentIndex];
-  $("learn-word").innerHTML = w.syllables.map((s, i) => `<span class="syllable" style="color:${i % 2 ? '#1e88e5' : '#e53935'}">${s}</span>`).join("");
+  $("learn-word").innerHTML = w.syllables.map((s, i) => `<span class="syllable" style="color:${i % 2 ? '#007AFF' : '#FF3B30'}">${s}</span>`).join("");
   $("learn-phonetic").textContent = w.phonetic;
   $("learn-trans").textContent = w.trans;
 }
@@ -488,7 +557,7 @@ function nextWord() { currentIndex = (currentIndex + 1) % WORDS.length; currentS
 function prevWord() { currentIndex = (currentIndex - 1 + WORDS.length) % WORDS.length; currentStep = 0; renderStep(); }
 function skipWord() { nextWord(); }
 
-/* === 6. 星星与打卡 === */
+/* === 5. 星星与打卡 === */
 function addStar() {
   stars++; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
   if (!checkedDays.includes(today)) { checkedDays.push(today); localStorage.setItem("checkedDays", JSON.stringify(checkedDays)); renderCalendar(); }
@@ -505,7 +574,7 @@ function renderCalendar() {
   }
 }
 
-/* === 7. 句子模块 === */
+/* === 6. 句子模块 === */
 let currentSentence = SENTENCES[0];
 function renderSentence() {
   const seg = new Intl.Segmenter("en", { granularity: "word" });
@@ -513,8 +582,6 @@ function renderSentence() {
   $("sentence-box").innerHTML = parts.map(p => p.isWordLike ? `<span class="word" data-word="${p.segment.toLowerCase()}">${p.segment}</span>` : `<span>${p.segment}</span>`).join("");
   document.querySelectorAll("#sentence-box .word").forEach(el => { el.onclick = () => showWordPopup(el.dataset.word); });
 }
-function speakSentence() { speak(currentSentence, 0.85); }
-function slowSpeakSentence() { speak(currentSentence, 0.55); }
 let sentRecording = false;
 function toggleSentenceRecord() {
   if (sentRecording) return; const r = initRecognition();
@@ -544,77 +611,38 @@ function showWordPopup(word) {
 }
 function closePopup() { $("popup-mask").classList.remove("show"); }
 
-/* === 8. 宠物养成模块 === */
+/* === 7. 宠物养成 === */
 function renderPet() {
   $("pet-avatar").textContent = petState.avatar;
   $("pet-name").textContent = petState.name;
   $("pet-level-text").textContent = `等级 ${petState.level} · ${petState.level < 3 ? "幼年期" : petState.level < 6 ? "成长期" : "成熟期"}`;
-  
   const maxExp = petState.level * 100;
   $("pet-exp-text").textContent = `${petState.exp} / ${maxExp}`;
   $("pet-exp-bar").style.width = Math.min((petState.exp / maxExp) * 100, 100) + "%";
-  
   $("pet-hunger-text").textContent = `${petState.hunger}%`;
   $("pet-hunger-bar").style.width = petState.hunger + "%";
-  if (petState.hunger < 30) $("pet-hunger-bar").style.background = "#e53935";
-  else $("pet-hunger-bar").style.background = "linear-gradient(90deg, #ffb347, #ffcc33)";
-  
-  // 根据等级改变宠物外观（简单示例）
   if (petState.level >= 6) $("pet-avatar").textContent = "🦁";
   else if (petState.level >= 3) $("pet-avatar").textContent = "🐯";
   else $("pet-avatar").textContent = petState.avatar;
 }
-
 function feedPet() {
-  if (stars < 5) {
-    $("pet-feedback").textContent = "星星不够啦，快去打卡赚星星吧！";
-    $("pet-feedback").className = "feedback bad";
-    speak("Not enough stars");
-    return;
-  }
-  stars -= 5;
-  localStorage.setItem("stars", JSON.stringify(stars));
-  updateAllStarsUI();
-  
-  petState.hunger = Math.min(petState.hunger + 20, 100);
-  petState.exp += 15;
-  
+  if (stars < 5) { $("pet-feedback").textContent = "星星不够啦，快去打卡赚星星吧！"; $("pet-feedback").className = "feedback bad"; speak("Not enough stars"); return; }
+  stars -= 5; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
+  petState.hunger = Math.min(petState.hunger + 20, 100); petState.exp += 15;
   const maxExp = petState.level * 100;
-  if (petState.exp >= maxExp) {
-    petState.level++;
-    petState.exp = 0;
-    $("pet-feedback").textContent = `🎉 升级啦！${petState.name} 现在 ${petState.level} 级了！`;
-    speak("Level up! Great job!");
-  } else {
-    $("pet-feedback").textContent = "小宠物吃得很开心！😋";
-    speak("Yummy!");
-  }
-  $("pet-feedback").className = "feedback good";
-  savePetState();
-  renderPet();
+  if (petState.exp >= maxExp) { petState.level++; petState.exp = 0; $("pet-feedback").textContent = `🎉 升级啦！${petState.name} 现在 ${petState.level} 级了！`; speak("Level up! Great job!"); }
+  else { $("pet-feedback").textContent = "小宠物吃得很开心！😋"; speak("Yummy!"); }
+  $("pet-feedback").className = "feedback good"; savePetState(); renderPet();
 }
+function patPet() { $("pet-feedback").textContent = "小宠物蹭了蹭你的手～ 🐾"; $("pet-feedback").className = "feedback good"; speak("Purr..."); }
+function savePetState() { localStorage.setItem("petState", JSON.stringify(petState)); }
 
-function patPet() {
-  $("pet-feedback").textContent = "小宠物蹭了蹭你的手～ 🐾";
-  $("pet-feedback").className = "feedback good";
-  speak("Purr...");
-}
-
-function savePetState() {
-  localStorage.setItem("petState", JSON.stringify(petState));
-}
-
-/* === 9. 兑换商城模块 === */
+/* === 8. 兑换商城 === */
 function renderShop() {
-  const grid = $("shop-grid");
-  grid.innerHTML = "";
-  if (shopItems.length === 0) {
-    grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #999; padding: 20px;'>还没有奖品，请在下方添加吧～</div>";
-    return;
-  }
+  const grid = $("shop-grid"); grid.innerHTML = "";
+  if (shopItems.length === 0) { grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 20px;'>还没有奖品，请在下方添加吧～</div>"; return; }
   shopItems.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "shop-item";
+    const div = document.createElement("div"); div.className = "shop-item";
     div.innerHTML = `
       <div class="shop-icon">${item.icon}</div>
       <div class="shop-name">${item.name}</div>
@@ -624,69 +652,46 @@ function renderShop() {
     grid.appendChild(div);
   });
 }
-
 function redeemItem(id) {
-  const item = shopItems.find(i => i.id === id);
-  if (!item) return;
-  if (stars < item.cost) {
-    alert(`星星不够啦！还需要 ${item.cost - stars} 颗星星哦～`);
-    speak("Not enough stars");
-    return;
-  }
+  const item = shopItems.find(i => i.id === id); if (!item) return;
+  if (stars < item.cost) { alert(`星星不够啦！还需要 ${item.cost - stars} 颗星星哦～`); speak("Not enough stars"); return; }
   if (confirm(`确定要花 ${item.cost} 颗星星兑换「${item.name}」吗？`)) {
-    stars -= item.cost;
-    localStorage.setItem("stars", JSON.stringify(stars));
-    updateAllStarsUI();
-    alert(`🎉 兑换成功！请找家长领取「${item.name}」吧！`);
-    speak("Congratulations! You got a reward!");
+    stars -= item.cost; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
+    alert(`🎉 兑换成功！请找家长领取「${item.name}」吧！`); speak("Congratulations! You got a reward!");
   }
 }
-
 function addShopItem() {
-  const name = $("new-item-name").value.trim();
-  const cost = parseInt($("new-item-cost").value);
-  const icon = $("new-item-icon").value.trim() || "🎁";
-  
-  if (!name || !cost || cost <= 0) {
-    alert("请填写完整的奖品名称和所需星星数！");
-    return;
-  }
-  
-  const newItem = { id: Date.now(), name, cost, icon };
-  shopItems.push(newItem);
-  localStorage.setItem("shopItems", JSON.stringify(shopItems));
-  renderShop();
-  
-  $("new-item-name").value = "";
-  $("new-item-cost").value = "";
-  $("new-item-icon").value = "";
-  alert("奖品添加成功！");
+  const name = $("new-item-name").value.trim(); const cost = parseInt($("new-item-cost").value); const icon = $("new-item-icon").value.trim() || "🎁";
+  if (!name || !cost || cost <= 0) { alert("请填写完整的奖品名称和所需星星数！"); return; }
+  shopItems.push({ id: Date.now(), name, cost, icon });
+  localStorage.setItem("shopItems", JSON.stringify(shopItems)); renderShop();
+  $("new-item-name").value = ""; $("new-item-cost").value = ""; $("new-item-icon").value = ""; alert("奖品添加成功！");
 }
 
-/* === 10. 全局 UI 更新 === */
+/* === 9. 全局 UI 更新 === */
 function updateAllStarsUI() {
-  $("total-stars").textContent = stars;
-  $("home-stars").textContent = stars;
-  $("shop-stars").textContent = stars;
+  $("total-stars").textContent = stars; $("home-stars").textContent = stars; $("shop-stars").textContent = stars;
+  // 更新首页进度条（模拟今日完成度）
+  const todayCount = checkedDays.includes(today) ? 5 : 0; // 简化逻辑，实际可根据真实进度
+  $("home-progress-text").textContent = `已完成 ${todayCount}/5`;
+  $("home-progress-bar").style.width = (todayCount / 5 * 100) + "%";
 }
 
-/* === 11. 初始化 === */
+/* === 10. 初始化 === */
 function init() {
+  // 预加载语音列表
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; };
+  }
   updateAllStarsUI();
   renderCalendar();
   renderStep();
   renderSentence();
   renderPet();
   renderShop();
-  
   let sIdx = 0; setInterval(() => { sIdx = (sIdx + 1) % SENTENCES.length; currentSentence = SENTENCES[sIdx]; renderSentence(); }, 30000);
-  
-  // 每次打开时，宠物稍微饿一点（模拟时间流逝）
-  if (petState.hunger > 10) {
-    petState.hunger = Math.max(petState.hunger - 5, 0);
-    savePetState();
-    renderPet();
-  }
+  if (petState.hunger > 10) { petState.hunger = Math.max(petState.hunger - 5, 0); savePetState(); renderPet(); }
 }
 init();
 </script>
