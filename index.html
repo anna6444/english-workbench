@@ -21,6 +21,7 @@
   button.success { background: var(--green); }
   button.warn { background: var(--orange); }
   button.danger { background: var(--red); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   
   /* === 底部导航栏 === */
   .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 10px 0 24px 0; border-top: 1px solid var(--gray); z-index: 1000; }
@@ -63,8 +64,9 @@
   .wordbook-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
   .wordbook-info p { font-size: 13px; color: var(--text-sub); }
   .import-area { margin-top: 20px; }
-  .import-area textarea { width: 100%; height: 150px; padding: 16px; border: 1px solid var(--gray); border-radius: 16px; font-size: 14px; font-family: monospace; resize: vertical; outline: none; margin-bottom: 12px; }
+  .import-area textarea { width: 100%; height: 150px; padding: 16px; border: 1px solid var(--gray); border-radius: 16px; font-size: 15px; font-family: monospace; resize: vertical; outline: none; margin-bottom: 12px; }
   .import-area textarea:focus { border-color: var(--blue); }
+  .import-area input { width: 100%; padding: 14px; border: 1px solid var(--gray); border-radius: 14px; font-size: 15px; outline: none; margin-bottom: 12px; }
 
   /* === 首页进度 === */
   .progress-card { padding: 20px 24px; }
@@ -75,6 +77,16 @@
   .stat-box { background: var(--bg-color); border-radius: 16px; padding: 16px; text-align: center; }
   .stat-box h4 { font-size: 24px; font-weight: 800; color: var(--blue); }
   .stat-box p { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+  
+  /* === 商城 === */
+  .shop-item { background: var(--card-bg); border: 1px solid var(--gray); border-radius: 16px; padding: 16px; text-align: center; transition: 0.2s; }
+  .shop-item:active { transform: scale(0.98); }
+  .shop-icon { font-size: 36px; margin-bottom: 8px; }
+  .shop-name { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .shop-cost { color: var(--orange); font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+  .cal-day { aspect-ratio: 1; border-radius: 10px; background: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--text-sub); }
+  .cal-day.done { background: var(--green); color: #fff; font-weight: 700; }
+  .cal-day.today { outline: 2px solid var(--blue); }
 </style>
 </head>
 <body>
@@ -113,7 +125,6 @@
       <div class="step" data-step="4">读</div>
       <div class="step" data-step="5">写</div>
     </div>
-    <!-- 学 -->
     <div id="panel-learn">
       <div class="word-display" id="learn-word"></div>
       <div class="phonetic" id="learn-phonetic"></div>
@@ -124,14 +135,12 @@
       </div>
       <div style="text-align: center; margin-top: 20px;"><button class="success" style="width: 80%;" onclick="nextStep()">我学会了 ➜</button></div>
     </div>
-    <!-- 译 -->
     <div id="panel-translate" class="hidden">
       <div class="word-display" id="trans-word"></div>
       <div style="text-align: center; color: var(--text-sub); margin-bottom: 12px; font-size: 14px;">选出正确的中文意思</div>
       <div class="options" id="trans-options"></div>
       <div class="feedback" id="trans-feedback"></div>
     </div>
-    <!-- 拼 -->
     <div id="panel-spell" class="hidden">
       <div class="translation" id="spell-trans"></div>
       <div class="spell-input" id="spell-slots"></div>
@@ -139,14 +148,12 @@
       <div class="feedback" id="spell-feedback"></div>
       <div style="text-align: center;"><button class="warn" onclick="resetSpell()">🔄 重来</button></div>
     </div>
-    <!-- 听 -->
     <div id="panel-listen" class="hidden">
       <div style="text-align: center; font-size: 60px; margin: 20px 0;">👂</div>
       <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 再听一遍</button></div>
       <div class="options" id="listen-options" style="margin-top: 20px;"></div>
       <div class="feedback" id="listen-feedback"></div>
     </div>
-    <!-- 读 -->
     <div id="panel-read" class="hidden">
       <div class="word-display" id="read-word"></div>
       <div style="text-align: center;"><button class="secondary" onclick="speakWord()">🔊 听标准发音</button></div>
@@ -157,7 +164,6 @@
       <div class="feedback" id="read-feedback"></div>
       <div style="text-align: center;"><button class="secondary" onclick="nextStep()">跳过，下一个 ➜</button></div>
     </div>
-    <!-- 写 -->
     <div id="panel-write" class="hidden">
       <div class="translation" id="write-trans"></div>
       <div style="text-align: center; margin: 16px 0;">
@@ -184,12 +190,12 @@
   </div>
 
   <div class="card">
-    <h3 style="margin-bottom: 16px;">➕ 新建单词本</h3>
+    <h3 style="margin-bottom: 16px;">➕ 新建单词本（自动查词）</h3>
     <div class="import-area">
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">每行一个单词，格式：<strong>单词 音标 翻译</strong>（音标和翻译可选，用空格隔开）</p>
-      <textarea id="new-book-words" placeholder="cat /kæt/ 猫&#10;hat /hæt/ 帽子&#10;dog 狗"></textarea>
-      <input type="text" id="new-book-name" placeholder="给单词本起个名字，如：牛津树1阶" style="width: 100%; padding: 14px; border: 1px solid var(--gray); border-radius: 14px; font-size: 15px; outline: none; margin-bottom: 12px;">
-      <button class="success" style="width: 100%;" onclick="createNewWordbook()">✅ 创建并保存</button>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 8px;">输入今天想学的英文单词（每行一个，或空格/逗号隔开），系统会自动查询音标和翻译：</p>
+      <textarea id="new-book-words" placeholder="apple&#10;banana&#10;stationery&#10;dog"></textarea>
+      <input type="text" id="new-book-name" placeholder="给单词本起个名字，如：今天的5个词">
+      <button class="success" style="width: 100%;" onclick="createNewWordbook()" id="create-book-btn">✅ 创建并直接开始学习</button>
     </div>
   </div>
 
@@ -260,61 +266,18 @@ const STORAGE_KEYS = {
   SHOP: 'ew_shopItems'           // 商城奖品
 };
 
-// 内置基础词库（200个小学核心词汇，按自然拼读分组）
+// 内置基础词库（小学核心词汇示范）
 const DEFAULT_WORDS = [
-  // -at 家族
   { word: "cat", phonetic: "/kæt/", trans: "猫", syllables: ["c","a","t"], family: "-at 家族" },
   { word: "hat", phonetic: "/hæt/", trans: "帽子", syllables: ["h","a","t"], family: "-at 家族" },
   { word: "mat", phonetic: "/mæt/", trans: "垫子", syllables: ["m","a","t"], family: "-at 家族" },
-  { word: "rat", phonetic: "/ræt/", trans: "老鼠", syllables: ["r","a","t"], family: "-at 家族" },
-  { word: "bat", phonetic: "/bæt/", trans: "蝙蝠", syllables: ["b","a","t"], family: "-at 家族" },
-  // -ap 家族
-  { word: "cap", phonetic: "/kæp/", trans: "帽子", syllables: ["c","a","p"], family: "-ap 家族" },
-  { word: "map", phonetic: "/mæp/", trans: "地图", syllables: ["m","a","p"], family: "-ap 家族" },
-  { word: "tap", phonetic: "/tæp/", trans: "水龙头", syllables: ["t","a","p"], family: "-ap 家族" },
-  // -ig 家族
-  { word: "big", phonetic: "/bɪɡ/", trans: "大的", syllables: ["b","i","g"], family: "-ig 家族" },
-  { word: "pig", phonetic: "/pɪɡ/", trans: "猪", syllables: ["p","i","g"], family: "-ig 家族" },
-  { word: "dig", phonetic: "/dɪɡ/", trans: "挖", syllables: ["d","i","g"], family: "-ig 家族" },
-  // -og 家族
   { word: "dog", phonetic: "/dɒɡ/", trans: "狗", syllables: ["d","o","g"], family: "-og 家族" },
-  { word: "log", phonetic: "/lɒɡ/", trans: "木头", syllables: ["l","o","g"], family: "-og 家族" },
-  { word: "fog", phonetic: "/fɒɡ/", trans: "雾", syllables: ["f","o","g"], family: "-og 家族" },
-  // -un 家族
   { word: "sun", phonetic: "/sʌn/", trans: "太阳", syllables: ["s","u","n"], family: "-un 家族" },
-  { word: "run", phonetic: "/rʌn/", trans: "跑", syllables: ["r","u","n"], family: "-un 家族" },
-  { word: "fun", phonetic: "/fʌn/", trans: "有趣", syllables: ["f","u","n"], family: "-un 家族" },
-  // -ook 家族
   { word: "book", phonetic: "/bʊk/", trans: "书", syllables: ["b","oo","k"], family: "-ook 家族" },
-  { word: "look", phonetic: "/lʊk/", trans: "看", syllables: ["l","oo","k"], family: "-ook 家族" },
-  { word: "cook", phonetic: "/kʊk/", trans: "做饭", syllables: ["c","oo","k"], family: "-ook 家族" },
-  // -ish 家族
-  { word: "fish", phonetic: "/fɪʃ/", trans: "鱼", syllables: ["f","i","sh"], family: "-ish 家族" },
-  { word: "dish", phonetic: "/dɪʃ/", trans: "盘子", syllables: ["d","i","sh"], family: "-ish 家族" },
-  { word: "wish", phonetic: "/wɪʃ/", trans: "愿望", syllables: ["w","i","sh"], family: "-ish 家族" },
-  // a-e 魔法e
   { word: "cake", phonetic: "/keɪk/", trans: "蛋糕", syllables: ["c","a","ke"], family: "a-e 魔法e" },
-  { word: "lake", phonetic: "/leɪk/", trans: "湖", syllables: ["l","a","ke"], family: "a-e 魔法e" },
-  { word: "make", phonetic: "/meɪk/", trans: "制作", syllables: ["m","a","ke"], family: "a-e 魔法e" },
-  { word: "bake", phonetic: "/beɪk/", trans: "烘焙", syllables: ["b","a","ke"], family: "a-e 魔法e" },
-  { word: "name", phonetic: "/neɪm/", trans: "名字", syllables: ["n","a","me"], family: "a-e 魔法e" },
-  { word: "game", phonetic: "/ɡeɪm/", trans: "游戏", syllables: ["g","a","me"], family: "a-e 魔法e" },
-  // 更多常见词
   { word: "apple", phonetic: "/ˈæpəl/", trans: "苹果", syllables: ["ap","ple"], family: "双音节" },
-  { word: "banana", phonetic: "/bəˈnɑːnə/", trans: "香蕉", syllables: ["ba","na","na"], family: "多音节" },
-  { word: "orange", phonetic: "/ˈɒrɪndʒ/", trans: "橙子", syllables: ["or","ange"], family: "双音节" },
   { word: "water", phonetic: "/ˈwɔːtər/", trans: "水", syllables: ["wa","ter"], family: "双音节" },
-  { word: "school", phonetic: "/skuːl/", trans: "学校", syllables: ["s","ch","ool"], family: "辅音组合" },
-  { word: "teacher", phonetic: "/ˈtiːtʃər/", trans: "老师", syllables: ["tea","cher"], family: "双音节" },
-  { word: "student", phonetic: "/ˈstjuːdənt/", trans: "学生", syllables: ["stu","dent"], family: "双音节" },
-  { word: "stationery", phonetic: "/ˈsteɪʃənri/", trans: "文具", syllables: ["sta","tion","ery"], family: "多音节" },
-  { word: "friend", phonetic: "/frend/", trans: "朋友", syllables: ["fr","iend"], family: "辅音组合" },
-  { word: "family", phonetic: "/ˈfæməli/", trans: "家庭", syllables: ["fa","mi","ly"], family: "多音节" },
-  { word: "happy", phonetic: "/ˈhæpi/", trans: "快乐的", syllables: ["hap","py"], family: "双音节" },
-  { word: "beautiful", phonetic: "/ˈbjuːtɪfl/", trans: "美丽的", syllables: ["beau","ti","ful"], family: "多音节" },
-  { word: "animal", phonetic: "/ˈænɪml/", trans: "动物", syllables: ["an","i","mal"], family: "多音节" },
-  { word: "elephant", phonetic: "/ˈelɪfənt/", trans: "大象", syllables: ["el","e","phant"], family: "多音节" },
-  { word: "umbrella", phonetic: "/ʌmˈbrelə/", trans: "雨伞", syllables: ["um","brel","la"], family: "多音节" }
+  { word: "school", phonetic: "/skuːl/", trans: "学校", syllables: ["s","ch","ool"], family: "辅音组合" }
 ];
 
 // 艾宾浩斯复习间隔（天数）
@@ -326,7 +289,6 @@ const EBBINGHAUS_INTERVALS = [1, 2, 4, 7, 15, 30];
 let currentBook = 'default'; // 当前学习的词本ID
 let currentWordList = []; // 当前学习的单词队列
 let currentIndex = 0, currentStep = 0;
-let isReviewMode = false;
 
 function initStorage() {
   if (!localStorage.getItem(STORAGE_KEYS.WORDBOOKS)) {
@@ -355,11 +317,8 @@ function getStars() { return parseInt(localStorage.getItem(STORAGE_KEYS.STARS) |
 function saveLearned(list) { localStorage.setItem(STORAGE_KEYS.LEARNED, JSON.stringify(list)); }
 function saveWrong(list) { localStorage.setItem(STORAGE_KEYS.WRONG, JSON.stringify(list)); }
 function saveStars(n) { localStorage.setItem(STORAGE_KEYS.STARS, n); }
-
-// 获取今天日期字符串
 function getTodayStr() { return new Date().toISOString().slice(0, 10); }
 
-// 计算下次复习时间
 function calcNextReview(reviewCount) {
   if (reviewCount >= EBBINGHAUS_INTERVALS.length) return null;
   const days = EBBINGHAUS_INTERVALS[reviewCount];
@@ -379,7 +338,7 @@ function generateDailyPlan() {
   // 1. 找出今天需要复习的已学会单词
   const reviewList = learned.filter(w => w.nextReview && w.nextReview <= today);
   
-  // 2. 找出今天需要复习的错题（错题优先级最高，错题复习间隔固定）
+  // 2. 找出今天需要复习的错题
   const wrongReviewList = wrong.filter(w => !w.nextReview || w.nextReview <= today);
   
   // 3. 从当前选中的词本中，找出还没学过的新词（每天最多学5个）
@@ -393,7 +352,112 @@ function generateDailyPlan() {
 }
 
 /* ============================================================
-   页面渲染：首页
+   核心：极简新建词库，自动查询音标、翻译、音节
+   ============================================================ */
+async function fetchWordInfo(word) {
+  let phonetic = "";
+  let trans = "暂无翻译";
+
+  // 1. 查询音标 (Free Dictionary API)
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data[0] && data[0].phonetic) phonetic = data[0].phonetic;
+      else if (data[0] && data[0].phonetics && data[0].phonetics[0]) phonetic = data[0].phonetics[0].text || "";
+    }
+  } catch (e) { console.log("音标查询失败:", word); }
+
+  // 2. 查询中文翻译 (MyMemory 免费翻译 API)
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${word}&langpair=en|zh-CN`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.responseData && data.responseData.translatedText) {
+        trans = data.responseData.translatedText.split(/[,，;；]/)[0].trim();
+      }
+    }
+  } catch (e) { console.log("翻译查询失败:", word); }
+
+  // 3. 自动切分音节（简单的元音分割算法）
+  const syllables = splitSyllables(word);
+
+  return { word, phonetic, trans, syllables, family: "" };
+}
+
+// 简单的音节拆分（按元音切分）
+function splitSyllables(word) {
+  const vowels = 'aeiouy';
+  let result = [];
+  let current = '';
+  const lower = word.toLowerCase();
+  
+  for (let i = 0; i < lower.length; i++) {
+    current += word[i];
+    if (vowels.includes(lower[i])) {
+      let hasVowelAfter = false;
+      for (let j = i + 1; j < lower.length; j++) {
+        if (vowels.includes(lower[j])) { hasVowelAfter = true; break; }
+      }
+      if (!hasVowelAfter || (i + 2 < lower.length && vowels.includes(lower[i+2]))) {
+        result.push(current);
+        current = '';
+      }
+    }
+  }
+  if (current) {
+    if (result.length > 0) result[result.length - 1] += current;
+    else result.push(current);
+  }
+  return result.length > 0 ? result : [word];
+}
+
+async function createNewWordbook() {
+  const name = document.getElementById("new-book-name").value.trim() || "今日新词";
+  const text = document.getElementById("new-book-words").value.trim();
+  
+  if (!text) { alert("请输入你想学习的英文单词！"); return; }
+  
+  // 提取单词（支持换行、空格、逗号分隔）
+  const lines = text.split(/[\n\s,]+/).filter(l => l.trim());
+  if (lines.length === 0) { alert("没有识别到有效单词！"); return; }
+
+  const btn = document.getElementById("create-book-btn");
+  const originalText = btn.textContent;
+  btn.textContent = "⏳ 正在查询单词信息...";
+  btn.disabled = true;
+
+  const words = [];
+  for (let i = 0; i < lines.length; i++) {
+    const word = lines[i].trim().toLowerCase();
+    if (!word) continue;
+    const info = await fetchWordInfo(word);
+    words.push(info);
+    await new Promise(r => setTimeout(r, 200)); // 避免请求过快
+  }
+
+  btn.textContent = originalText;
+  btn.disabled = false;
+
+  if (words.length === 0) { alert("没有识别到有效单词！"); return; }
+
+  const books = getWordbooks();
+  const id = 'user_' + Date.now();
+  books[id] = { name: name, words: words, isSystem: false };
+  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
+
+  document.getElementById("new-book-name").value = "";
+  document.getElementById("new-book-words").value = "";
+
+  alert(`✅ 单词本「${name}」创建成功！共自动识别 ${words.length} 个单词。\n即将进入学习页面！`);
+  
+  renderHome();
+  renderWordbooks();
+  startLearn(id); // 直接开始学习这个新词库
+}
+
+/* ============================================================
+   页面渲染：首页与词库
    ============================================================ */
 function renderHome() {
   const plan = generateDailyPlan();
@@ -402,7 +466,6 @@ function renderHome() {
   const today = getTodayStr();
   const checked = JSON.parse(localStorage.getItem(STORAGE_KEYS.CHECKED_DAYS) || '[]');
   
-  // 统计
   const totalTasks = plan.reviewList.length + plan.wrongReviewList.length + plan.newWords.length;
   document.getElementById('stat-review-count').textContent = plan.reviewList.length + plan.wrongReviewList.length;
   document.getElementById('stat-wrong-count').textContent = wrong.length;
@@ -412,7 +475,6 @@ function renderHome() {
   document.getElementById('home-progress-text').textContent = `${doneCount} / ${totalTasks}`;
   document.getElementById('home-progress-bar').style.width = totalTasks > 0 ? (doneCount / totalTasks * 100) + '%' : '0%';
   
-  // 渲染词本列表
   const books = getWordbooks();
   const listEl = document.getElementById('home-wordbook-list');
   listEl.innerHTML = '';
@@ -432,15 +494,60 @@ function renderHome() {
   });
 }
 
+function renderWordbooks() {
+  const books = getWordbooks();
+  const container = document.getElementById('wordbook-list-container');
+  container.innerHTML = '';
+  Object.entries(books).forEach(([id, book]) => {
+    const div = document.createElement('div');
+    div.className = 'wordbook-item';
+    div.innerHTML = `
+      <div class="wordbook-info">
+        <h3>${book.name}</h3>
+        <p>共 ${book.words.length} 个单词 ${book.isSystem ? '· 系统词库' : '· 我的词库'}</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="secondary" style="padding: 6px 12px; font-size: 12px;" onclick="startLearn('${id}')">学习</button>
+        ${!book.isSystem ? `<button class="danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteWordbook('${id}')">删除</button>` : ''}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function deleteWordbook(id) {
+  if (!confirm("确定要删除这个单词本吗？")) return;
+  const books = getWordbooks();
+  delete books[id];
+  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
+  renderHome();
+  renderWordbooks();
+}
+
+function startSystemBook(type) {
+  if (type === 'wrong') {
+    const wrongList = getWrong();
+    if (wrongList.length === 0) { alert("错题本是空的，加油保持！"); return; }
+    currentWordList = wrongList.map(w => ({...w, isReview: true, isWrongReview: true}));
+    document.getElementById('learn-title').textContent = '错题本复习';
+  } else if (type === 'learned') {
+    const learnedList = getLearned();
+    if (learnedList.length === 0) { alert("还没有已学会的单词哦！"); return; }
+    currentWordList = learnedList.map(w => ({...w, isReview: true}));
+    document.getElementById('learn-title').textContent = '已学会词库复习';
+  }
+  currentIndex = 0; currentStep = 0;
+  switchTab('tab-learn', document.querySelectorAll('.nav-item')[1]);
+  renderStep();
+}
+
 /* ============================================================
    开始学习
    ============================================================ */
 function startLearn(bookId) {
   currentBook = bookId;
-  isReviewMode = false;
   const plan = generateDailyPlan();
   
-  // 合并今日复习 + 新词
   currentWordList = [
     ...plan.wrongReviewList.map(w => ({...w, isReview: true, isWrongReview: true})),
     ...plan.reviewList.map(w => ({...w, isReview: true})),
@@ -486,7 +593,6 @@ function renderLearn() {
 function renderTranslate() {
   const w = getCurrentWord();
   $("trans-word").textContent = w.word;
-  // 生成干扰项：从当前词库或默认词库中随机选3个
   const pool = currentWordList.length > 5 ? currentWordList : DEFAULT_WORDS;
   const others = pool.filter(x => x.word !== w.word).sort(() => Math.random() - 0.5).slice(0, 3);
   const opts = [w, ...others].sort(() => Math.random() - 0.5);
@@ -500,7 +606,7 @@ function renderTranslate() {
       } else {
         el.classList.add("wrong"); $("trans-feedback").textContent = "再试一次，你可以的！";
         $("trans-feedback").className = "feedback bad"; speak("Try again");
-        markWrongWord(w); // 记录错题
+        markWrongWord(w);
       }
     };
   });
@@ -535,7 +641,7 @@ function checkSpell() {
     setTimeout(() => nextStep(), 800);
   } else {
     $("spell-feedback").textContent = "差一点点，再试试～"; $("spell-feedback").className = "feedback bad"; speak("Almost");
-    markWrongWord(w); // 记录错题
+    markWrongWord(w);
     setTimeout(resetSpell, 700);
   }
 }
@@ -593,7 +699,6 @@ function checkWrite() {
   if (val === w.word) {
     $("write-feedback").textContent = "写对啦！🏆"; $("write-feedback").className = "feedback good"; speak("Perfect!");
     setTimeout(() => {
-      // 完成一个单词的整个流程，标记为已学会
       markLearnedWord(w);
       addStar();
       nextWord();
@@ -610,24 +715,14 @@ function checkWrite() {
 function markWrongWord(wordObj) {
   if (!wordObj.word) return;
   let wrongList = getWrong();
-  // 检查是否已经在错题本中
   const existingIdx = wrongList.findIndex(w => w.word === wordObj.word);
   if (existingIdx >= 0) {
-    // 如果已经在错题本，重置复习计划，强制明天再复习
     wrongList[existingIdx].errorCount = (wrongList[existingIdx].errorCount || 0) + 1;
-    wrongList[existingIdx].nextReview = getTodayStr(); // 今天再练一次
-    wrongList[existingIdx].reviewCount = 0; // 重置复习次数
+    wrongList[existingIdx].nextReview = getTodayStr();
+    wrongList[existingIdx].reviewCount = 0;
   } else {
-    // 新加入错题本
-    wrongList.push({
-      ...wordObj,
-      errorCount: 1,
-      reviewCount: 0,
-      nextReview: getTodayStr(),
-      addedDate: getTodayStr()
-    });
+    wrongList.push({ ...wordObj, errorCount: 1, reviewCount: 0, nextReview: getTodayStr(), addedDate: getTodayStr() });
   }
-  // 如果已学会词库中有这个单词，先移除
   let learnedList = getLearned();
   learnedList = learnedList.filter(w => w.word !== wordObj.word);
   saveLearned(learnedList);
@@ -638,23 +733,13 @@ function markLearnedWord(wordObj) {
   if (!wordObj.word) return;
   let learnedList = getLearned();
   const existingIdx = learnedList.findIndex(w => w.word === wordObj.word);
-  
   if (existingIdx >= 0) {
-    // 如果已经学过，更新复习次数和时间
     learnedList[existingIdx].reviewCount = (learnedList[existingIdx].reviewCount || 0) + 1;
     learnedList[existingIdx].nextReview = calcNextReview(learnedList[existingIdx].reviewCount);
   } else {
-    // 首次学会
-    learnedList.push({
-      ...wordObj,
-      reviewCount: 0,
-      nextReview: calcNextReview(0),
-      learnedDate: getTodayStr()
-    });
+    learnedList.push({ ...wordObj, reviewCount: 0, nextReview: calcNextReview(0), learnedDate: getTodayStr() });
   }
   saveLearned(learnedList);
-  
-  // 如果错题本中有这个单词，移除（因为已经学会了）
   let wrongList = getWrong();
   wrongList = wrongList.filter(w => w.word !== wordObj.word);
   saveWrong(wrongList);
@@ -666,10 +751,7 @@ function markLearnedWord(wordObj) {
 function renderStep() {
   document.querySelectorAll(".step").forEach(el => { const s = parseInt(el.dataset.step); el.classList.toggle("active", s === currentStep); el.classList.toggle("done", s < currentStep); });
   const panels = ['panel-learn', 'panel-translate', 'panel-spell', 'panel-listen', 'panel-read', 'panel-write'];
-  panels.forEach((p, i) => {
-    const el = $(p);
-    if (el) el.classList.toggle("hidden", i !== currentStep);
-  });
+  panels.forEach((p, i) => { const el = $(p); if (el) el.classList.toggle("hidden", i !== currentStep); });
   if (currentStep === 0) renderLearn();
   if (currentStep === 1) renderTranslate();
   if (currentStep === 2) renderSpell();
@@ -682,7 +764,7 @@ function nextWord() {
   currentIndex++;
   if (currentIndex >= currentWordList.length) {
     alert("🎉 太棒了！今天的单词全部学完了！");
-    addStar(); // 奖励一颗星星
+    addStar();
     switchTab('tab-home', document.querySelector('.nav-item'));
     return;
   }
@@ -691,85 +773,6 @@ function nextWord() {
 }
 function prevWord() { if (currentIndex > 0) { currentIndex--; currentStep = 0; renderStep(); } }
 function skipWord() { nextWord(); }
-
-/* ============================================================
-   词库管理功能
-   ============================================================ */
-function createNewWordbook() {
-  const name = $("new-book-name").value.trim();
-  const text = $("new-book-words").value.trim();
-  if (!name || !text) { alert("请填写单词本名称和单词内容！"); return; }
-  
-  const lines = text.split('\n').filter(l => l.trim());
-  const words = lines.map(line => {
-    const parts = line.trim().split(/\s+/);
-    if (parts.length === 1) return { word: parts[0], phonetic: '', trans: '', syllables: parts[0].split(''), family: '' };
-    if (parts.length === 2) return { word: parts[0], phonetic: '', trans: parts[1], syllables: parts[0].split(''), family: '' };
-    // 假设格式：word /phonetic/ trans
-    return { word: parts[0], phonetic: parts[1], trans: parts.slice(2).join(' '), syllables: parts[0].split(''), family: '' };
-  });
-  
-  if (words.length === 0) { alert("没有识别到有效单词！"); return; }
-  
-  const books = getWordbooks();
-  const id = 'user_' + Date.now();
-  books[id] = { name: name, words: words, isSystem: false };
-  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
-  
-  // 清空输入
-  $("new-book-name").value = "";
-  $("new-book-words").value = "";
-  alert(`✅ 单词本「${name}」创建成功！共导入 ${words.length} 个单词。`);
-  renderHome();
-  renderWordbooks();
-}
-
-function renderWordbooks() {
-  const books = getWordbooks();
-  const container = document.getElementById('wordbook-list-container');
-  container.innerHTML = '';
-  Object.entries(books).forEach(([id, book]) => {
-    const div = document.createElement('div');
-    div.className = 'wordbook-item';
-    div.innerHTML = `
-      <div class="wordbook-info">
-        <h3>${book.name}</h3>
-        <p>共 ${book.words.length} 个单词 ${book.isSystem ? '· 系统词库' : '· 我的词库'}</p>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button class="secondary" style="padding: 6px 12px; font-size: 12px;" onclick="startLearn('${id}')">学习</button>
-        ${!book.isSystem ? `<button class="danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteWordbook('${id}')">删除</button>` : ''}
-      </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function deleteWordbook(id) {
-  if (!confirm("确定要删除这个单词本吗？")) return;
-  const books = getWordbooks();
-  delete books[id];
-  localStorage.setItem(STORAGE_KEYS.WORDBOOKS, JSON.stringify(books));
-  renderHome();
-  renderWordbooks();
-}
-
-function startSystemBook(type) {
-  if (type === 'wrong') {
-    const wrongList = getWrong();
-    if (wrongList.length === 0) { alert("错题本是空的，加油保持！"); return; }
-    currentWordList = wrongList.map(w => ({...w, isReview: true, isWrongReview: true}));
-    document.getElementById('learn-title').textContent = '错题本复习';
-  } else if (type === 'learned') {
-    const learnedList = getLearned();
-    if (learnedList.length === 0) { alert("还没有已学会的单词哦！"); return; }
-    currentWordList = learnedList.map(w => ({...w, isReview: true}));
-    document.getElementById('learn-title').textContent = '已学会词库复习';
-  }
-  currentIndex = 0; currentStep = 0;
-  switchTab('tab-learn', document.querySelectorAll('.nav-item')[1]);
-  renderStep();
-}
 
 /* ============================================================
    语音功能（中考听力标准音色 + 慢速优化）
@@ -901,7 +904,6 @@ function switchTab(tabId, btn) {
 function closePopup() { document.getElementById('popup-mask').style.display = 'none'; }
 
 function init() {
-  // 预加载语音列表
   if (window.speechSynthesis) {
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; };
