@@ -12,8 +12,8 @@
   .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
   
   /* 顶部导航栏 */
-  .nav-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; }
-  .nav-btn { flex: 1; padding: 12px 8px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; background: #e0e0e0; color: #666; cursor: pointer; transition: 0.2s; }
+  .nav-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; }
+  .nav-btn { flex: 1 1 30%; padding: 10px 4px; border: none; border-radius: 12px; font-size: 14px; font-weight: bold; background: #e0e0e0; color: #666; cursor: pointer; transition: 0.2s; }
   .nav-btn.active { background: #4a90e2; color: #fff; box-shadow: 0 3px 0 #357abd; }
   .nav-btn:active { transform: translateY(2px); }
   .tab-content { display: block; }
@@ -69,19 +69,83 @@
   .cal-day.done { background: #66bb6a; color: #fff; font-weight: bold; }
   .cal-day.today { outline: 2px solid #4a90e2; }
   .center { text-align: center; }
+  
+  /* 宠物养成模块样式 */
+  .pet-container { text-align: center; padding: 20px; background: #fdfbf7; border-radius: 16px; border: 2px dashed #ffcc80; margin-bottom: 16px; }
+  .pet-avatar { font-size: 80px; line-height: 1; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .pet-status { display: flex; justify-content: space-around; margin-top: 16px; font-size: 16px; font-weight: bold; color: #555; }
+  .progress-bar { width: 100%; height: 16px; background: #eee; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #ffb347, #ffcc33); width: 0%; transition: width 0.5s; }
+  .progress-fill.green { background: linear-gradient(90deg, #66bb6a, #43a047); }
+
+  /* 兑换商城模块样式 */
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .shop-item { background: #fdfdfd; border: 2px solid #e0e0e0; border-radius: 16px; padding: 16px; text-align: center; transition: all 0.2s; }
+  .shop-item:hover { border-color: #4a90e2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.15); }
+  .shop-icon { font-size: 40px; margin-bottom: 8px; }
+  .shop-name { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 8px; }
+  .shop-cost { color: #ffa726; font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+  .shop-btn { width: 100%; padding: 8px; font-size: 14px; border-radius: 10px; }
+  .add-item-area { background: #f9f9f9; border-radius: 14px; padding: 16px; margin-top: 20px; }
+  .add-item-area input { padding: 10px; border: 2px solid #d6e6f7; border-radius: 10px; font-size: 14px; width: 100%; margin-bottom: 10px; outline: none; }
 </style>
 </head>
 <body>
 
 <!-- 导航栏 -->
 <div class="nav-bar">
-  <button class="nav-btn active" onclick="switchTab('tab-words', this)">📖 单词打卡</button>
+  <button class="nav-btn active" onclick="switchTab('tab-home', this)">🐾 宠物首页</button>
+  <button class="nav-btn" onclick="switchTab('tab-words', this)">📖 单词打卡</button>
   <button class="nav-btn" onclick="switchTab('tab-sentences', this)">📝 句子练习</button>
   <button class="nav-btn" onclick="switchTab('tab-calendar', this)">📅 打卡记录</button>
+  <button class="nav-btn" onclick="switchTab('tab-shop', this)">🎁 兑换商城</button>
 </div>
 
-<!-- ================= 模块1：单词打卡 ================= -->
-<div id="tab-words" class="tab-content">
+<!-- ================= 模块1：宠物首页 ================= -->
+<div id="tab-home" class="tab-content">
+  <div class="card">
+    <h1>🐾 我的小宠物</h1>
+    <div class="subtitle">完成打卡赚星星，喂饱小宠物吧！</div>
+    
+    <div class="pet-container">
+      <div class="pet-avatar" id="pet-avatar">🐱</div>
+      <div style="font-size: 22px; font-weight: bold; color: #1a237e;" id="pet-name">小猫咪</div>
+      <div style="font-size: 14px; color: #888; margin-top: 4px;" id="pet-level-text">等级 1 · 幼年期</div>
+      
+      <!-- 经验条 -->
+      <div style="margin-top: 16px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px;">
+          <span>成长经验</span>
+          <span id="pet-exp-text">0 / 100</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill green" id="pet-exp-bar" style="width: 0%;"></div></div>
+      </div>
+      
+      <!-- 饥饿度条 -->
+      <div style="margin-top: 12px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px;">
+          <span>饱食度</span>
+          <span id="pet-hunger-text">80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="pet-hunger-bar" style="width: 80%;"></div></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="success" onclick="feedPet()">🍖 喂食（消耗5⭐）</button>
+      <button class="secondary" onclick="patPet()">🤚 摸摸它</button>
+    </div>
+    <div class="feedback" id="pet-feedback"></div>
+    
+    <div class="center" style="margin-top: 16px;">
+      <span style="font-size: 18px; font-weight: bold;">⭐ 当前星星：<span id="home-stars" style="color: #ffa726;">0</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 模块2：单词打卡 ================= -->
+<div id="tab-words" class="tab-content hidden">
   <div class="card">
     <h1>🌈 英语单词打卡</h1>
     <div class="subtitle">每天 5 个单词，学译拼听读写全搞定</div>
@@ -148,7 +212,7 @@
   </div>
 </div>
 
-<!-- ================= 模块2：句子练习 ================= -->
+<!-- ================= 模块3：句子练习 ================= -->
 <div id="tab-sentences" class="tab-content hidden">
   <div class="card">
     <h1>📖 句子打卡</h1>
@@ -163,7 +227,7 @@
   </div>
 </div>
 
-<!-- ================= 模块3：打卡记录 ================= -->
+<!-- ================= 模块4：打卡记录 ================= -->
 <div id="tab-calendar" class="tab-content hidden">
   <div class="card">
     <h1>📅 打卡记录</h1>
@@ -171,6 +235,29 @@
     <div class="calendar" id="calendar"></div>
     <div class="center" style="margin-top:12px;font-size:18px;">
       ⭐ 总星星：<span id="total-stars" style="color:#ffa726;font-weight:bold;">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 模块5：兑换商城 ================= -->
+<div id="tab-shop" class="tab-content hidden">
+  <div class="card">
+    <h1>🎁 兑换商城</h1>
+    <div class="subtitle">用努力赚来的星星，兑换喜欢的奖励吧！</div>
+    <div class="center" style="margin-bottom: 16px; font-size: 18px; font-weight: bold;">
+      ⭐ 可用星星：<span id="shop-stars" style="color: #ffa726;">0</span>
+    </div>
+
+    <div class="shop-grid" id="shop-grid">
+      <!-- 商品列表由 JS 动态渲染 -->
+    </div>
+
+    <div class="add-item-area">
+      <h3 style="font-size: 15px; margin-bottom: 10px; color: #555;">🛠️ 家长自定义奖品</h3>
+      <input type="text" id="new-item-name" placeholder="奖品名称，如：看动画片30分钟">
+      <input type="number" id="new-item-cost" placeholder="需要星星数，如：50">
+      <input type="text" id="new-item-icon" placeholder="图标（可选），如：📺">
+      <button class="secondary" style="width: 100%;" onclick="addShopItem()">➕ 添加奖品</button>
     </div>
   </div>
 </div>
@@ -189,7 +276,7 @@
 </div>
 
 <script>
-/* === 1. 词库 === */
+/* === 1. 词库与句子 === */
 const WORDS = [
   { word: "cat", phonetic: "/kæt/", trans: "猫", syllables: ["c","a","t"], family: "-at 家族" },
   { word: "hat", phonetic: "/hæt/", trans: "帽子", syllables: ["h","a","t"], family: "-at 家族" },
@@ -204,11 +291,22 @@ const WORDS = [
 ];
 const SENTENCES = ["I have a new stationery.", "The cat is on the mat.", "Look at the fish in the water."];
 
-/* === 2. 状态 === */
+/* === 2. 全局状态 === */
 let currentIndex = 0, currentStep = 0;
 let stars = JSON.parse(localStorage.getItem("stars") || "0");
 let checkedDays = JSON.parse(localStorage.getItem("checkedDays") || "[]");
 let today = new Date().toISOString().slice(0, 10);
+
+// 宠物状态
+let petState = JSON.parse(localStorage.getItem("petState") || '{"name":"小猫咪","level":1,"exp":0,"hunger":80,"avatar":"🐱"}');
+
+// 商城商品状态 (默认列表)
+let shopItems = JSON.parse(localStorage.getItem("shopItems") || JSON.stringify([
+  { id: 1, name: "看动画片30分钟", cost: 50, icon: "📺" },
+  { id: 2, name: "买一个小玩具", cost: 200, icon: "🧸" },
+  { id: 3, name: "去公园玩一次", cost: 100, icon: "🏞️" },
+  { id: 4, name: "吃一份冰淇淋", cost: 80, icon: "🍦" }
+]));
 
 function $(id) { return document.getElementById(id); }
 
@@ -232,7 +330,7 @@ function speakWord() { speak(WORDS[currentIndex].word); }
 function slowSpeakWord() { speak(WORDS[currentIndex].word, 0.55); }
 function speakPopupWord() { speak($("pop-word").textContent); }
 
-/* === 5. 单词模块 === */
+/* === 5. 单词打卡模块 === */
 function renderLearn() {
   const w = WORDS[currentIndex];
   $("learn-word").innerHTML = w.syllables.map((s, i) => `<span class="syllable" style="color:${i % 2 ? '#1e88e5' : '#e53935'}">${s}</span>`).join("");
@@ -354,7 +452,7 @@ function skipWord() { nextWord(); }
 
 /* === 6. 星星与打卡 === */
 function addStar() {
-  stars++; localStorage.setItem("stars", JSON.stringify(stars)); $("total-stars").textContent = stars;
+  stars++; localStorage.setItem("stars", JSON.stringify(stars)); updateAllStarsUI();
   if (!checkedDays.includes(today)) { checkedDays.push(today); localStorage.setItem("checkedDays", JSON.stringify(checkedDays)); renderCalendar(); }
 }
 function renderCalendar() {
@@ -408,10 +506,149 @@ function showWordPopup(word) {
 }
 function closePopup() { $("popup-mask").classList.remove("show"); }
 
-/* === 8. 初始化 === */
+/* === 8. 宠物养成模块 === */
+function renderPet() {
+  $("pet-avatar").textContent = petState.avatar;
+  $("pet-name").textContent = petState.name;
+  $("pet-level-text").textContent = `等级 ${petState.level} · ${petState.level < 3 ? "幼年期" : petState.level < 6 ? "成长期" : "成熟期"}`;
+  
+  const maxExp = petState.level * 100;
+  $("pet-exp-text").textContent = `${petState.exp} / ${maxExp}`;
+  $("pet-exp-bar").style.width = Math.min((petState.exp / maxExp) * 100, 100) + "%";
+  
+  $("pet-hunger-text").textContent = `${petState.hunger}%`;
+  $("pet-hunger-bar").style.width = petState.hunger + "%";
+  if (petState.hunger < 30) $("pet-hunger-bar").style.background = "#e53935";
+  else $("pet-hunger-bar").style.background = "linear-gradient(90deg, #ffb347, #ffcc33)";
+  
+  // 根据等级改变宠物外观（简单示例）
+  if (petState.level >= 6) $("pet-avatar").textContent = "🦁";
+  else if (petState.level >= 3) $("pet-avatar").textContent = "🐯";
+  else $("pet-avatar").textContent = petState.avatar;
+}
+
+function feedPet() {
+  if (stars < 5) {
+    $("pet-feedback").textContent = "星星不够啦，快去打卡赚星星吧！";
+    $("pet-feedback").className = "feedback bad";
+    speak("Not enough stars");
+    return;
+  }
+  stars -= 5;
+  localStorage.setItem("stars", JSON.stringify(stars));
+  updateAllStarsUI();
+  
+  petState.hunger = Math.min(petState.hunger + 20, 100);
+  petState.exp += 15;
+  
+  const maxExp = petState.level * 100;
+  if (petState.exp >= maxExp) {
+    petState.level++;
+    petState.exp = 0;
+    $("pet-feedback").textContent = `🎉 升级啦！${petState.name} 现在 ${petState.level} 级了！`;
+    speak("Level up! Great job!");
+  } else {
+    $("pet-feedback").textContent = "小宠物吃得很开心！😋";
+    speak("Yummy!");
+  }
+  $("pet-feedback").className = "feedback good";
+  savePetState();
+  renderPet();
+}
+
+function patPet() {
+  $("pet-feedback").textContent = "小宠物蹭了蹭你的手～ 🐾";
+  $("pet-feedback").className = "feedback good";
+  speak("Purr...");
+}
+
+function savePetState() {
+  localStorage.setItem("petState", JSON.stringify(petState));
+}
+
+/* === 9. 兑换商城模块 === */
+function renderShop() {
+  const grid = $("shop-grid");
+  grid.innerHTML = "";
+  if (shopItems.length === 0) {
+    grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #999; padding: 20px;'>还没有奖品，请在下方添加吧～</div>";
+    return;
+  }
+  shopItems.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "shop-item";
+    div.innerHTML = `
+      <div class="shop-icon">${item.icon}</div>
+      <div class="shop-name">${item.name}</div>
+      <div class="shop-cost">⭐ ${item.cost}</div>
+      <button class="shop-btn secondary" onclick="redeemItem(${item.id})">兑换</button>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function redeemItem(id) {
+  const item = shopItems.find(i => i.id === id);
+  if (!item) return;
+  if (stars < item.cost) {
+    alert(`星星不够啦！还需要 ${item.cost - stars} 颗星星哦～`);
+    speak("Not enough stars");
+    return;
+  }
+  if (confirm(`确定要花 ${item.cost} 颗星星兑换「${item.name}」吗？`)) {
+    stars -= item.cost;
+    localStorage.setItem("stars", JSON.stringify(stars));
+    updateAllStarsUI();
+    alert(`🎉 兑换成功！请找家长领取「${item.name}」吧！`);
+    speak("Congratulations! You got a reward!");
+  }
+}
+
+function addShopItem() {
+  const name = $("new-item-name").value.trim();
+  const cost = parseInt($("new-item-cost").value);
+  const icon = $("new-item-icon").value.trim() || "🎁";
+  
+  if (!name || !cost || cost <= 0) {
+    alert("请填写完整的奖品名称和所需星星数！");
+    return;
+  }
+  
+  const newItem = { id: Date.now(), name, cost, icon };
+  shopItems.push(newItem);
+  localStorage.setItem("shopItems", JSON.stringify(shopItems));
+  renderShop();
+  
+  $("new-item-name").value = "";
+  $("new-item-cost").value = "";
+  $("new-item-icon").value = "";
+  alert("奖品添加成功！");
+}
+
+/* === 10. 全局 UI 更新 === */
+function updateAllStarsUI() {
+  $("total-stars").textContent = stars;
+  $("home-stars").textContent = stars;
+  $("shop-stars").textContent = stars;
+}
+
+/* === 11. 初始化 === */
 function init() {
-  $("total-stars").textContent = stars; renderCalendar(); renderStep(); renderSentence();
+  updateAllStarsUI();
+  renderCalendar();
+  renderStep();
+  renderSentence();
+  renderPet();
+  renderShop();
+  
   let sIdx = 0; setInterval(() => { sIdx = (sIdx + 1) % SENTENCES.length; currentSentence = SENTENCES[sIdx]; renderSentence(); }, 30000);
+  
+  // 每次打开时，宠物稍微饿一点（模拟时间流逝）
+  if (petState.hunger > 10) {
+    petState.hunger = Math.max(petState.hunger - 5, 0);
+    savePetState();
+    renderPet();
+  }
 }
 init();
 </script>
