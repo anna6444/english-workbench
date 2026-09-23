@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
+  // ★ 关键修改：解决 GitHub Pages 子路径白屏问题
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -10,8 +12,6 @@ export default defineConfig({
     },
   },
   server: {
-    // 沙箱/反代环境下必须监听 0.0.0.0 且放开 host 校验，
-    // 否则 Vite 会报 "Blocked request. This host is not allowed."
     host: '0.0.0.0',
     port: 5173,
     strictPort: false,
